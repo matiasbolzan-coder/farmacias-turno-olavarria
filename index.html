@@ -231,9 +231,15 @@
         if (!match) return;
         const nombre = match[1].trim().toUpperCase();
         const rest = match[2].trim();
-        const addressParts = rest.split(/\.\s*Tel(?:éfono)?:\s*/i);
-        const direccion = addressParts[0].replace(/\.$/, '').trim();
-        const telefono = (addressParts[1] || '').replace(/\.$/, '').trim();
+        const telMatch = rest.match(/^(.*?)\.\s*Tel\.?\s*(.*)$/i);
+
+let direccion = rest;
+let telefono = '';
+
+if (telMatch) {
+  direccion = telMatch[1].trim();
+  telefono = telMatch[2].trim();
+}
         if (nombre) {
           direcciones[nombre] = { direccion, telefono };
         }
