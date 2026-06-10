@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmacias de Turno - Olavarría</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f9;
+      color: #333;
+    }
+    header {
+      background: #0056b3;
+      color: white;
+      padding: 20px 15px;
+      text-align: center;
+    }
+    main {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 15px 40px;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    label {
+      font-weight: bold;
+      min-width: 120px;
+    }
+    input[type="date"] {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      flex: 1;
+      min-width: 180px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    @media (max-width: 600px) {
+      .input-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      label {
+        min-width: auto;
+        width: 100%;
+      }
+      button {
+        width: 100%;
+      }
+      .card {
+        padding: 18px;
+      }
+      main {
+        margin: 15px auto;
+      }
+    }
+    button {
+      background: #0056b3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .watermark {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      opacity: 0.45;
+      font-size: 0.9rem;
+      color: #333;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    button:hover {
+      background: #003f80;
+    }
+    .pharmacy {
+      border-bottom: 1px solid #ddd;
+      padding: 15px 0;
+    }
+    .pharmacy:last-child {
+      border-bottom: none;
+    }
+    .pharmacy h3 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+    }
+    .pharmacy p {
+      margin: 4px 0;
+    }
+    .pharmacy a {
+      color: #0056b3;
+      text-decoration: none;
+    }
+    .pharmacy a:hover {
+      text-decoration: underline;
+    }
+    .no-results {
+      text-align: center;
+      color: #666;
+      margin-top: 20px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #666;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Farmacias de Turno en Olavarría</h1>
+    <p>Rotación diaria entre 3 farmacias de turno. Provincia de Buenos Aires, República Argentina.</p>
+  </header>
+  <div class="watermark">Creada por Matias Bolzan</div>
+  <main>
+    <div class="card">
+      <div class="input-group">
+        <label for="fechaTurno">Seleccionar fecha:</label>
+        <input type="date" id="fechaTurno" />
+        <button id="buscarBtn">Buscar farmacia</button>
+      </div>
+      <p style="margin:0 0 15px; color:#545454; font-size:0.95rem;">Abre esta página desde tu celular o compártela a través de un servidor local/WhatsApp para usarla en el navegador móvil.</p>
+      <div id="resultado"></div>
+    </div>
+    <div class="footer">
+      <p>Haga clic en la dirección para ver la ubicación en Google Maps.</p>
+    </div>
+  </main>
+
+  <script>
+    const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+    function buildSourceUrl(fecha) {
+      const mes = monthNames[fecha.getMonth()];
+      return `https://smataolavarria.com.ar/farmacias-de-turno-${mes}/`;
+    }
+
+    async function fetchSourceHtml(url) {
+      const proxy = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxy + encodeURIComponent(url));
+      if (!response.ok) {
+        throw new Error(`No se pudo cargar la fuente: ${response.status}`);
+      }
+      return response.text();
+    }
+
+    function cleanText(html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return doc.body ? doc.body.textContent || '' : '';
+    }
+
+    function parseTurnos(text, pharmacyNames) {
+      const [turnosText] = text.split(/DIRECCIONES Y TEL[EÉ]FONOS|DIRECCIONES Y TELEFONOS/i);
+      if (!turnosText) return {};
+      const headerMatch = turnosText.match(/TURNOS\s+[A-ZÁÉÍÓÚÑ0-9\s]+/i);
+      let content = headerMatch ? turnosText.slice(headerMatch.index + headerMatch[0].length) : turnosText;
+      content = content.replace(/\s+/g, ' ').trim();
+
+      const dayRegex = /(LUNES|MARTES|MIERCOLES|MIÉRCOLES|JUEVES|VIERNES|SABADO|SÁBADO|DOMINGO)(\d+)(.*?)(?=(?:LUNES|MARTES|MIERCOLES|MIÉRCOLES|JUEVES|VIERNES|SABADO|SÁBADO|DOMINGO)\d+|$)/gis;
+      const knownNames = (pharmacyNames || []).map(name => name.toUpperCase()).sort((a, b) => b.length - a.length);
+      const turnos = {};
+      let match;
+
+      while ((match = dayRegex.exec(content)) !== null) {
+        const diaNumero = parseInt(match[2], 10);
+        if (Number.isNaN(diaNumero)) continue;
+        let remaining = match[3].trim();
+        const farmacias = [];
+
+        while (remaining.length > 0) {
+          let found = null;
+          for (const name of knownNames) {
+            if (remaining.startsWith(name)) {
+              found = name;
+              break;
+            }
+          }
+          if (!found) break;
+          farmacias.push(found);
+          remaining = remaining.slice(found.length).trim();
+        }
+
+        turnos[diaNumero] = {
+          diaSemana: match[1],
+          farmacias
+        };
+      }
+
+      return turnos;
+    }
+
+    function parseDirecciones(text) {
+      const parts = text.split(/DIRECCIONES Y TEL[EÉ]FONOS|DIRECCIONES Y TELEFONOS/i);
+      const direccionText = parts[1] || '';
+      const lines = direccionText.split('\n').map(line => line.trim()).filter(Boolean);
+      const direcciones = {};
+
+      lines.forEach(line => {
+        const match = line.match(/^([A-ZÁÉÍÓÚÑ0-9\s]+):\s*(.+)$/i);
+        if (!match) return;
+        const nombre = match[1].trim().toUpperCase();
+        const rest = match[2].trim();
+        const addressParts = rest.split(/\.\s*Tel(?:éfono)?:\s*/i);
+        const direccion = addressParts[0].replace(/\.$/, '').trim();
+        const telefono = (addressParts[1] || '').replace(/\.$/, '').trim();
+        if (nombre) {
+          direcciones[nombre] = { direccion, telefono };
+        }
+      });
+
+      return direcciones;
+    }
+
+    function buildMapsUrl(nombre, direccion) {
+      const query = [nombre, direccion, 'Olavarría', 'Buenos Aires'].filter(Boolean).join(' ');
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+
+    function showMessage(text) {
+      const resultado = document.getElementById('resultado');
+      resultado.innerHTML = `<p class="no-results">${text}</p>`;
+    }
+
+    function formatDateForInput(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    async function mostrarResultado(fechaTexto) {
+      const fechaInput = document.getElementById('fechaTurno');
+      if (!fechaTexto) {
+        fechaTexto = fechaInput.value || formatDateForInput(new Date());
+      }
+      const resultado = document.getElementById('resultado');
+      resultado.innerHTML = '';
+      if (!fechaTexto) {
+        showMessage('Por favor, selecciona una fecha para ver las farmacias de turno.');
+        return;
+      }
+
+      const fecha = new Date(fechaTexto + 'T00:00:00');
+      const url = buildSourceUrl(fecha);
+      resultado.innerHTML = `<p class="no-results">Cargando datos desde la fuente: <a href="${url}" target="_blank" rel="noopener">${url}</a></p>`;
+
+      try {
+        const html = await fetchSourceHtml(url);
+        const text = cleanText(html);
+        const direcciones = parseDirecciones(text);
+        const pharmacyNames = Object.keys(direcciones);
+        const turnos = parseTurnos(text, pharmacyNames);
+        const dia = fecha.getDate();
+        const turno = turnos[dia];
+
+        if (!turno || !turno.farmacias.length) {
+          showMessage('No se encontró información de turnos para esa fecha en la fuente.');
+          return;
+        }
+
+        const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        const titulo = document.createElement('h2');
+        titulo.textContent = `Farmacias de turno para el ${fechaFormateada}`;
+        resultado.innerHTML = '';
+        resultado.appendChild(titulo);
+
+        turno.farmacias.forEach(nombre => {
+          const nombreUpper = nombre.toUpperCase();
+          const info = direcciones[nombreUpper] || { direccion: 'No disponible', telefono: 'No disponible' };
+          const item = document.createElement('div');
+          item.className = 'pharmacy';
+          item.innerHTML = `
+            <h3>${nombre}</h3>
+            <p><strong>Dirección:</strong> <a href="${buildMapsUrl(nombre, info.direccion)}" target="_blank" rel="noopener">${info.direccion}</a></p>
+            <p><strong>Teléfono:</strong> ${info.telefono}</p>
+          `;
+          resultado.appendChild(item);
+        });
+      } catch (error) {
+        resultado.innerHTML = '';
+        showMessage(`Error al cargar la fuente: ${error.message}`);
+      }
+    }
+
+    const fechaInput = document.getElementById('fechaTurno');
+    const hoy = new Date();
+    fechaInput.value = formatDateForInput(hoy);
+
+    document.getElementById('buscarBtn').addEventListener('click', () => {
+      const fechaTexto = fechaInput.value;
+      mostrarResultado(fechaTexto);
+    });
+
+    // Mostrar resultados iniciales con el mes actual
+    mostrarResultado(fechaInput.value);
+  </script>
+</body>
+</html>
