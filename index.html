@@ -313,7 +313,7 @@ if (telMatch) {
           item.innerHTML = `
             <h3>${nombre}</h3>
             <p><strong>Dirección:</strong> <a href="${buildMapsUrl(nombre, info.direccion)}" target="_blank" rel="noopener">${info.direccion}</a></p>
-            <p><strong>Teléfono:</strong> ${info.telefono}</p>
+            <p><strong>Teléfono:</strong> <a href="tel:${info.telefono.replace(/\D/g, '')}">${info.telefono}</a></p>
           `;
           resultado.appendChild(item);
         });
