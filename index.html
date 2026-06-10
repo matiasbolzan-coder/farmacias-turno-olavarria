@@ -279,7 +279,7 @@ if (telMatch) {
 
       const fecha = new Date(fechaTexto + 'T00:00:00');
       const url = buildSourceUrl(fecha);
-      resultado.innerHTML = `<p class="no-results">Cargando datos desde la fuente: <a href="${url}" target="_blank" rel="noopener">${url}</a></p>`;
+      resultado.innerHTML = `<p class="no-results">🔍 Buscando farmacias de turno...</p>`;
 
       try {
         const html = await fetchSourceHtml(url);
