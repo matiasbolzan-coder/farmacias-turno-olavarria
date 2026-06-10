@@ -155,13 +155,25 @@
     }
 
     async function fetchSourceHtml(url) {
-      const proxy = 'https://api.allorigins.win/raw?url=';
+  const proxies = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?'
+  ];
+
+  for (const proxy of proxies) {
+    try {
       const response = await fetch(proxy + encodeURIComponent(url));
       if (!response.ok) {
-        throw new Error(`No se pudo cargar la fuente: ${response.status}`);
+        throw new Error(`Error ${response.status}`);
       }
-      return response.text();
+      return await response.text();
+    } catch (error) {
+      // Prueba el siguiente proxy
     }
+  }
+
+  throw new Error('No se pudo cargar la fuente. Probá nuevamente en unos minutos.');
+}
 
     function cleanText(html) {
       const doc = new DOMParser().parseFromString(html, 'text/html');
