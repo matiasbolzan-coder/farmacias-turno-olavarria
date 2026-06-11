@@ -594,6 +594,14 @@ document.getElementById('btnMasCercana').addEventListener('click', () => {
   );
 
 });
+    const selectorFarmacia = document.getElementById('selectorFarmacia');
+
+Object.keys(todasLasFarmacias).sort().forEach(nombre => {
+  const opcion = document.createElement('option');
+  opcion.value = nombre;
+  opcion.textContent = nombre;
+  selectorFarmacia.appendChild(opcion);
+});
     // Mostrar resultados iniciales con el mes actual
     mostrarResultado(fechaInput.value);
   </script>
