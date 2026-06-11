@@ -602,6 +602,27 @@ Object.keys(todasLasFarmacias).sort().forEach(nombre => {
   opcion.textContent = nombre;
   selectorFarmacia.appendChild(opcion);
 });
+    selectorFarmacia.addEventListener('change', () => {
+  const nombre = selectorFarmacia.value;
+  const resultadoFarmacia = document.getElementById('resultadoFarmacia');
+
+  if (!nombre) {
+    resultadoFarmacia.innerHTML = '';
+    return;
+  }
+
+  const farmacia = todasLasFarmacias[nombre];
+  const mapsUrl = buildMapsUrl(nombre, farmacia.direccion);
+  const telefonoLimpio = farmacia.telefono.replace(/\D/g, '');
+
+  resultadoFarmacia.innerHTML = `
+    <div class="pharmacy">
+      <h3>${nombre}</h3>
+      <p><strong>Dirección:</strong> <a href="${mapsUrl}" target="_blank" rel="noopener">${farmacia.direccion}</a></p>
+      <p><strong>Teléfono:</strong> <a href="tel:${telefonoLimpio}">${farmacia.telefono}</a></p>
+    </div>
+  `;
+});
     // Mostrar resultados iniciales con el mes actual
     mostrarResultado(fechaInput.value);
   </script>
