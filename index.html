@@ -445,10 +445,32 @@ item.innerHTML = `
       const fechaTexto = fechaInput.value;
       mostrarResultado(fechaTexto);
     });
-document.getElementById('btnMasCercana').addEventListener('click', () => {
+function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
 
-  if (!navigator.geolocation) {
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+
+ if (!navigator.geolocation) {
     alert('Tu navegador no permite obtener la ubicación.');
+    return;
+  }
+
+  const farmaciasEnPantalla = document.querySelectorAll('.pharmacy');
+
+  if (farmaciasEnPantalla.length === 0) {
+    alert('Primero buscá una fecha para ver las farmacias de turno.');
     return;
   }
 
@@ -458,15 +480,70 @@ document.getElementById('btnMasCercana').addEventListener('click', () => {
       const latUsuario = posicion.coords.latitude;
       const lonUsuario = posicion.coords.longitude;
 
-      alert(
-        'Ubicación obtenida correctamente.\n\n' +
-        'Latitud: ' + latUsuario +
-        '\nLongitud: ' + lonUsuario
+      let farmaciaMasCercana = null;
+      let distanciaMenor = Infinity;
+      let tarjetaMasCercana = null;
+      let mapsUrlMasCercana = '';
+
+      farmaciasEnPantalla.forEach((tarjeta) => {
+        tarjeta.classList.remove('mas-cercana');
+
+        const nombreElemento = tarjeta.querySelector('h3');
+        const direccionElemento = tarjeta.querySelector('p a');
+
+        if (!nombreElemento || !direccionElemento) {
+          return;
+        }
+
+        const nombre = nombreElemento.textContent.trim().toUpperCase();
+        const datos = coordenadasFarmacias[nombre];
+
+        if (!datos) {
+          return;
+        }
+
+        const distancia = calcularDistanciaKm(
+          latUsuario,
+          lonUsuario,
+          datos.lat,
+          datos.lon
+        );
+
+        if (distancia < distanciaMenor) {
+          distanciaMenor = distancia;
+          farmaciaMasCercana = nombreElemento.textContent.trim();
+          tarjetaMasCercana = tarjeta;
+          mapsUrlMasCercana = direccionElemento.href;
+        }
+      });
+
+      if (!farmaciaMasCercana) {
+        alert('No se pudo calcular la farmacia más cercana porque faltan coordenadas.');
+        return;
+      }
+
+      tarjetaMasCercana.classList.add('mas-cercana');
+
+      const distanciaTexto =
+        distanciaMenor < 1
+          ? Math.round(distanciaMenor * 1000) + ' metros'
+          : distanciaMenor.toFixed(1) + ' km';
+
+      const abrirMaps = confirm(
+        'La farmacia más cercana es:\n\n' +
+        farmaciaMasCercana +
+        '\n\nDistancia aproximada: ' +
+        distanciaTexto +
+        '\n\n¿Desea abrir Google Maps para ir?'
       );
+
+      if (abrirMaps) {
+        window.open(mapsUrlMasCercana, '_blank');
+      }
 
     },
     () => {
-      alert('No fue posible obtener tu ubicación.');
+      alert('No fue posible obtener tu ubicación. Revisá los permisos del navegador.');
     }
   );
 
