@@ -358,7 +358,7 @@ item.innerHTML = `
   <h3>${nombre}</h3>
   <p><strong>Dirección:</strong> <a href="${mapsUrl}" target="_blank" rel="noopener">${info.direccion}</a></p>
   <p><strong>Teléfono:</strong> <a href="tel:${info.telefono.replace(/\D/g, '')}">${info.telefono}</a></p>
-  <p><a href="https://wa.me/?text=${whatsappText}" target="_blank" rel="noopener">📲 Compartir por WhatsApp</a></p>
+ <p><a href="https://wa.me/?text=${whatsappText}" target="_blank" rel="noopener" style="display:inline-block;background:#25D366;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;">📲 Compartir por WhatsApp</a></p>
 `;
           
           resultado.appendChild(item);
