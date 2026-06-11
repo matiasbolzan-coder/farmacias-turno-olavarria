@@ -445,7 +445,32 @@ item.innerHTML = `
       const fechaTexto = fechaInput.value;
       mostrarResultado(fechaTexto);
     });
+document.getElementById('btnMasCercana').addEventListener('click', () => {
 
+  if (!navigator.geolocation) {
+    alert('Tu navegador no permite obtener la ubicación.');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (posicion) => {
+
+      const latUsuario = posicion.coords.latitude;
+      const lonUsuario = posicion.coords.longitude;
+
+      alert(
+        'Ubicación obtenida correctamente.\n\n' +
+        'Latitud: ' + latUsuario +
+        '\nLongitud: ' + lonUsuario
+      );
+
+    },
+    () => {
+      alert('No fue posible obtener tu ubicación.');
+    }
+  );
+
+});
     // Mostrar resultados iniciales con el mes actual
     mostrarResultado(fechaInput.value);
   </script>
