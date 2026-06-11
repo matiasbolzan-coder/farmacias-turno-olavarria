@@ -149,6 +149,8 @@ header {
       font-size: 0.95rem;
     }
   </style>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0056b3">
 </head>
 <body>
  <header>
@@ -381,5 +383,10 @@ item.innerHTML = `
     // Mostrar resultados iniciales con el mes actual
     mostrarResultado(fechaInput.value);
   </script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js');
+  }
+</script>
 </body>
 </html>
