@@ -461,8 +461,9 @@ function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+document.getElementById('btnMasCercana').addEventListener('click', () => {
 
- if (!navigator.geolocation) {
+  if (!navigator.geolocation) {
     alert('Tu navegador no permite obtener la ubicación.');
     return;
   }
@@ -476,7 +477,6 @@ function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
 
   navigator.geolocation.getCurrentPosition(
     (posicion) => {
-
       const latUsuario = posicion.coords.latitude;
       const lonUsuario = posicion.coords.longitude;
 
@@ -491,16 +491,12 @@ function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
         const nombreElemento = tarjeta.querySelector('h3');
         const direccionElemento = tarjeta.querySelector('p a');
 
-        if (!nombreElemento || !direccionElemento) {
-          return;
-        }
+        if (!nombreElemento || !direccionElemento) return;
 
         const nombre = nombreElemento.textContent.trim().toUpperCase();
         const datos = coordenadasFarmacias[nombre];
 
-        if (!datos) {
-          return;
-        }
+        if (!datos) return;
 
         const distancia = calcularDistanciaKm(
           latUsuario,
@@ -540,7 +536,6 @@ function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
       if (abrirMaps) {
         window.open(mapsUrlMasCercana, '_blank');
       }
-
     },
     () => {
       alert('No fue posible obtener tu ubicación. Revisá los permisos del navegador.');
