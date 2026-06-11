@@ -261,6 +261,31 @@ header {
 
 
   <script>
+    const patronGuardias9Dias = [
+  ["LAVIN", "MARTINEZ", "STRIEBECK"],
+  ["MODO FARMA", "DISANTI", "SPINOLA"],
+  ["CENTRAL", "MARTEL", "MOGUES", "SPINA"],
+  ["BETZ", "OLAVARRIA", "PACHECO", "ZAPARARTE"],
+  ["FENIX", "FERRERO", "SAN JOSE"],
+  ["ALVAREZ", "BALDINI", "FAILLA"],
+  ["BUENO", "GOMEZ", "LUJAN"],
+  ["ALEM", "LA ESENCIA", "MENESCALDI"],
+  ["CORREA", "MAGISTRAL", "MELFFI"]
+];
+
+function obtenerFarmaciasPorPatron(fecha) {
+  const fechaBase = new Date('2026-04-01T00:00:00');
+  const fechaConsulta = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+
+  const diferenciaDias = Math.round((fechaConsulta - fechaBase) / (1000 * 60 * 60 * 24));
+
+  let indice = diferenciaDias % 9;
+  if (indice < 0) {
+    indice += 9;
+  }
+
+  return patronGuardias9Dias[indice];
+}
     const todasLasFarmacias = {
   "ALEM": { direccion: "Rivadavia 2957", telefono: "425245" },
   "ALVAREZ": { direccion: "Belgrano y Moreno", telefono: "420560/422488/414570" },
@@ -441,6 +466,92 @@ if (telMatch) {
       const resultado = document.getElementById('resultado');
       resultado.innerHTML = `<p class="no-results">${text}</p>`;
     }
+    function mostrarTurnoEstimado(fecha, resultado) {
+  const farmaciasEstimadas = obtenerFarmaciasPorPatron(fecha);
+
+  const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  resultado.innerHTML = '';
+
+  const aviso = document.createElement('div');
+  aviso.style.background = '#fff3cd';
+  aviso.style.borderLeft = '5px solid #ffc107';
+  aviso.style.padding = '12px 15px';
+  aviso.style.borderRadius = '8px';
+  aviso.style.marginBottom = '15px';
+  aviso.style.color = '#333';
+
+  aviso.innerHTML = `
+    ⚠️ <strong>Datos estimados por patrón de rotación.</strong><br>
+    No se pudo obtener la información oficial desde SMATA.
+    Puede haber cambios o excepciones especiales.
+  `;
+
+  resultado.appendChild(aviso);
+
+  const titulo = document.createElement('h2');
+  titulo.textContent = `Farmacias estimadas para el ${fechaFormateada}`;
+  resultado.appendChild(titulo);
+
+  farmaciasEstimadas.forEach(nombre => {
+    const farmacia = todasLasFarmacias[nombre];
+
+    if (!farmacia) {
+      return;
+    }
+
+    const mapsUrl = buildMapsUrl(nombre, farmacia.direccion);
+    const telefonoLimpio = farmacia.telefono.replace(/\D/g, '');
+
+    const whatsappText = encodeURIComponent(
+      `Farmacia de turno estimada en Olavarría:\n\n` +
+      `${nombre}\n` +
+      `Dirección: ${farmacia.direccion}\n` +
+      `Teléfono: ${farmacia.telefono}\n` +
+      `Mapa: ${mapsUrl}\n\n` +
+      `Aviso: dato estimado por patrón de rotación. Verificar con la fuente oficial.`
+    );
+
+    const item = document.createElement('div');
+    item.className = 'pharmacy';
+
+    item.innerHTML = `
+      <h3>${nombre}</h3>
+
+      <p><strong>Dirección:</strong> ${farmacia.direccion}</p>
+      <p><strong>Teléfono:</strong> ${farmacia.telefono}</p>
+
+      <p>
+        <a href="tel:${telefonoLimpio}"
+           style="display:inline-block;background:#0056b3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+           📞 Llamar
+        </a>
+
+        <a href="${mapsUrl}"
+           target="_blank"
+           rel="noopener"
+           style="display:inline-block;background:#28a745;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+           📍 Cómo llegar
+        </a>
+      </p>
+
+      <p>
+        <a href="https://wa.me/?text=${whatsappText}"
+           target="_blank"
+           rel="noopener"
+           style="display:inline-block;background:#25D366;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+           📲 Compartir por WhatsApp
+        </a>
+      </p>
+    `;
+
+    resultado.appendChild(item);
+  });
+}
 
     function formatDateForInput(date) {
       const year = date.getFullYear();
@@ -474,10 +585,10 @@ if (telMatch) {
         const dia = fecha.getDate();
         const turno = turnos[dia];
 
-        if (!turno || !turno.farmacias.length) {
-          showMessage('No se encontró información de turnos para esa fecha en la fuente.');
-          return;
-        }
+       if (!turno || !turno.farmacias.length) {
+  mostrarTurnoEstimado(fecha, resultado);
+  return;
+}
 
         const fechaFormateada = fecha.toLocaleDateString('es-AR', {
           year: 'numeric',
@@ -538,10 +649,9 @@ item.innerHTML = `
           
           resultado.appendChild(item);
         });
-      } catch (error) {
-        resultado.innerHTML = '';
-        showMessage(`Error al cargar la fuente: ${error.message}`);
-      }
+    } catch (error) {
+  mostrarTurnoEstimado(fecha, resultado);
+}
     }
 
     const fechaInput = document.getElementById('fechaTurno');
