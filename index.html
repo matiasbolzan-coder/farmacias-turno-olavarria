@@ -212,6 +212,19 @@ header {
   ">
     📲 Instalar app en Android
   </button>
+     <button id="btnCompartirApp" style="
+  background:#25D366;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:10px 14px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-left:8px;
+  margin-top:8px;
+">
+  📤 Compartir app
+</button>
 
   <p id="mensajeInstalacion" style="font-size:0.9rem; margin-top:10px;">
     Si el botón no funciona, abrí el menú de Chrome en la ezquina superior izquierda toca los 3 puntos  y elegí Agregar a pantalla principal se despliega  “Instalar aplicación” o “Agregar a pantalla principal”.
@@ -738,6 +751,35 @@ resultadoFarmacia.innerHTML = `
       }
 
       eventoInstalacion = null;
+    });
+  });
+</script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btnCompartirApp = document.getElementById('btnCompartirApp');
+
+    if (!btnCompartirApp) return;
+
+    btnCompartirApp.addEventListener('click', async () => {
+      const datosCompartir = {
+        title: 'Farmacias de Turno Olavarría',
+        text: 'Consultá farmacias de turno, teléfonos, direcciones y cómo llegar en Olavarría.',
+        url: 'https://matiasbolzan-coder.github.io/farmacias-turno-olavarria/'
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(datosCompartir);
+        } catch (error) {
+          // El usuario canceló o no pudo compartir
+        }
+      } else {
+        const mensaje = encodeURIComponent(
+          datosCompartir.text + '\n\n' + datosCompartir.url
+        );
+
+        window.open('https://wa.me/?text=' + mensaje, '_blank');
+      }
     });
   });
 </script>
