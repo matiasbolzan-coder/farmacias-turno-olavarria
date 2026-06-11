@@ -344,10 +344,22 @@ if (telMatch) {
           const info = direcciones[nombreUpper] || { direccion: 'No disponible', telefono: 'No disponible' };
           const item = document.createElement('div');
           item.className = 'pharmacy';
-          item.innerHTML = `
-            <h3>${nombre}</h3>
-            <p><strong>Dirección:</strong> <a href="${buildMapsUrl(nombre, info.direccion)}" target="_blank" rel="noopener">${info.direccion}</a></p>
-            <p><strong>Teléfono:</strong> <a href="tel:${info.telefono.replace(/\D/g, '')}">${info.telefono}</a></p>
+         const mapsUrl = buildMapsUrl(nombre, info.direccion);
+
+const whatsappText = encodeURIComponent(
+  `Farmacia de turno en Olavarría:\n\n` +
+  `${nombre}\n` +
+  `Dirección: ${info.direccion}\n` +
+  `Teléfono: ${info.telefono}\n` +
+  `Mapa: ${mapsUrl}`
+);
+
+item.innerHTML = `
+  <h3>${nombre}</h3>
+  <p><strong>Dirección:</strong> <a href="${mapsUrl}" target="_blank" rel="noopener">${info.direccion}</a></p>
+  <p><strong>Teléfono:</strong> <a href="tel:${info.telefono.replace(/\D/g, '')}">${info.telefono}</a></p>
+  <p><a href="https://wa.me/?text=${whatsappText}" target="_blank" rel="noopener">📲 Compartir por WhatsApp</a></p>
+`;
           `;
           resultado.appendChild(item);
         });
