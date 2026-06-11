@@ -615,13 +615,36 @@ Object.keys(todasLasFarmacias).sort().forEach(nombre => {
   const mapsUrl = buildMapsUrl(nombre, farmacia.direccion);
   const telefonoLimpio = farmacia.telefono.replace(/\D/g, '');
 
-  resultadoFarmacia.innerHTML = `
-    <div class="pharmacy">
-      <h3>${nombre}</h3>
-      <p><strong>Dirección:</strong> <a href="${mapsUrl}" target="_blank" rel="noopener">${farmacia.direccion}</a></p>
-      <p><strong>Teléfono:</strong> <a href="tel:${telefonoLimpio}">${farmacia.telefono}</a></p>
-    </div>
-  `;
+ const whatsappTextBuscador = encodeURIComponent(
+  `Farmacia en Olavarría:\n\n` +
+  `${nombre}\n` +
+  `Dirección: ${farmacia.direccion}\n` +
+  `Teléfono: ${farmacia.telefono}\n` +
+  `Mapa: ${mapsUrl}`
+);
+
+resultadoFarmacia.innerHTML = `
+  <div class="pharmacy">
+    <h3>${nombre}</h3>
+
+    <p><strong>Dirección:</strong> ${farmacia.direccion}</p>
+    <p><strong>Teléfono:</strong> ${farmacia.telefono}</p>
+
+    <p>
+      <a href="tel:${telefonoLimpio}" style="display:inline-block;background:#0056b3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+        📞 Llamar
+      </a>
+
+      <a href="${mapsUrl}" target="_blank" rel="noopener" style="display:inline-block;background:#28a745;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+        📍 Cómo llegar
+      </a>
+
+      <a href="https://wa.me/?text=${whatsappTextBuscador}" target="_blank" rel="noopener" style="display:inline-block;background:#25D366;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+        📲 Compartir
+      </a>
+    </p>
+  </div>
+`;
 });
     // Mostrar resultados iniciales con el mes actual
     mostrarResultado(fechaInput.value);
