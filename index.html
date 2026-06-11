@@ -692,6 +692,55 @@ resultadoFarmacia.innerHTML = `
     // Mostrar resultados iniciales con el mes actual
     mostrarResultado(fechaInput.value);
   </script>
+ <script>
+  let eventoInstalacion = null;
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    eventoInstalacion = event;
+
+    const botonInstalar = document.getElementById('btnInstalarApp');
+    const mensajeInstalacion = document.getElementById('mensajeInstalacion');
+
+    if (botonInstalar) {
+      botonInstalar.style.display = 'inline-block';
+    }
+
+    if (mensajeInstalacion) {
+      mensajeInstalacion.textContent = 'Tocá el botón para instalar la app en tu celular.';
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const botonInstalar = document.getElementById('btnInstalarApp');
+    const mensajeInstalacion = document.getElementById('mensajeInstalacion');
+
+    if (!botonInstalar) return;
+
+    botonInstalar.addEventListener('click', async () => {
+      if (!eventoInstalacion) {
+        alert('Si no aparece la instalación automática, tocá los 3 puntos de Chrome ⋮ y elegí “Instalar aplicación” o “Agregar a pantalla principal”.');
+        return;
+      }
+
+      eventoInstalacion.prompt();
+
+      const resultado = await eventoInstalacion.userChoice;
+
+      if (resultado.outcome === 'accepted') {
+        if (mensajeInstalacion) {
+          mensajeInstalacion.textContent = 'La app fue instalada correctamente.';
+        }
+      } else {
+        if (mensajeInstalacion) {
+          mensajeInstalacion.textContent = 'La instalación fue cancelada.';
+        }
+      }
+
+      eventoInstalacion = null;
+    });
+  });
+</script>
   <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js');
