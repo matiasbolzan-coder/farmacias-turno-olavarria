@@ -506,7 +506,108 @@ function mostrarTelefonoConPrefijo(telefono) {
       const query = [nombre, direccion, 'Olavarría', 'Buenos Aires'].filter(Boolean).join(' ');
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     }
+async function compartirTurnoDesdePantalla() {
+  const resultado = document.getElementById('resultado');
+  const farmacias = resultado.querySelectorAll('.pharmacy');
 
+  if (farmacias.length === 0) {
+    alert('Primero buscá una fecha para ver las farmacias de turno.');
+    return;
+  }
+
+  const titulo = resultado.querySelector('h2');
+  let mensaje = 'Farmacias de turno en Olavarría\n';
+
+  if (titulo) {
+    mensaje += titulo.textContent + '\n\n';
+  } else {
+    mensaje += '\n';
+  }
+
+  farmacias.forEach(tarjeta => {
+    const nombre = tarjeta.querySelector('h3')?.textContent || '';
+    const textos = tarjeta.querySelectorAll('p');
+
+    let direccion = '';
+    let telefono = '';
+
+    textos.forEach(p => {
+      const texto = p.textContent.trim();
+
+      if (texto.startsWith('Dirección:')) {
+        direccion = texto.replace('Dirección:', '').trim();
+      }
+
+      if (texto.startsWith('Teléfono:')) {
+        telefono = texto.replace('Teléfono:', '').trim();
+      }
+    });
+
+    const linkMaps = Array.from(tarjeta.querySelectorAll('a'))
+      .find(a => a.textContent.includes('Cómo llegar'));
+
+    const mapsUrl = linkMaps ? linkMaps.href : '';
+
+    mensaje +=
+      nombre + '\n' +
+      'Dirección: ' + direccion + '\n' +
+      'Teléfono: ' + telefono + '\n';
+
+    if (mapsUrl) {
+      mensaje += 'Mapa: ' + mapsUrl + '\n';
+    }
+
+    mensaje += '\n';
+  });
+
+  mensaje +=
+    'App Farmacias de Turno Olavarría:\n' +
+    'https://matiasbolzan-coder.github.io/farmacias-turno-olavarria/';
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Farmacias de Turno Olavarría',
+        text: mensaje
+      });
+    } catch (error) {
+      // El usuario canceló el compartir
+    }
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent(mensaje), '_blank');
+  }
+}
+
+function agregarBotonCompartirTurno(resultado) {
+  const botonAnterior = document.getElementById('btnCompartirTurnoCompleto');
+
+  if (botonAnterior) {
+    botonAnterior.remove();
+  }
+
+  const contenedor = document.createElement('div');
+  contenedor.id = 'btnCompartirTurnoCompleto';
+  contenedor.style.textAlign = 'center';
+  contenedor.style.marginTop = '20px';
+
+  contenedor.innerHTML = `
+    <button style="
+      background:#25D366;
+      color:white;
+      border:none;
+      border-radius:8px;
+      padding:12px 16px;
+      cursor:pointer;
+      font-weight:bold;
+    ">
+      📲 Compartir turno completo
+    </button>
+  `;
+
+  contenedor.querySelector('button').addEventListener('click', compartirTurnoDesdePantalla);
+
+  resultado.appendChild(contenedor);
+}
     function showMessage(text) {
       const resultado = document.getElementById('resultado');
       resultado.innerHTML = `<p class="no-results">${text}</p>`;
@@ -596,6 +697,7 @@ function mostrarTelefonoConPrefijo(telefono) {
 
     resultado.appendChild(item);
   });
+              agregarBotonCompartirTurno(resultado);
 }
 
     function formatDateForInput(date) {
@@ -716,8 +818,11 @@ item.innerHTML = `
   </p>
 `;
           
-          resultado.appendChild(item);
-        });
+        resultado.appendChild(item);
+  });
+
+  agregarBotonCompartirTurno(resultado);
+}
     } catch (error) {
   mostrarTurnoEstimado(fecha, resultado);
 }
