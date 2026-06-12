@@ -604,11 +604,24 @@ function mostrarTelefonoConPrefijo(telefono) {
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     }
+    function obtenerFechaTurnoVigente() {
+  const ahora = new Date();
+  const fechaTurno = new Date(ahora);
+
+  const hora = ahora.getHours();
+  const minutos = ahora.getMinutes();
+
+  if (hora < 8 || (hora === 8 && minutos < 30)) {
+    fechaTurno.setDate(fechaTurno.getDate() - 1);
+  }
+
+  return fechaTurno;
+}
 
     async function mostrarResultado(fechaTexto) {
-      const fechaInput = document.getElementById('fechaTurno');
-      if (!fechaTexto) {
-        fechaTexto = fechaInput.value || formatDateForInput(new Date());
+    const fechaInput = document.getElementById('fechaTurno');
+const fechaTurnoVigente = obtenerFechaTurnoVigente();
+fechaInput.value = formatDateForInput(fechaTurnoVigente);
       }
       const resultado = document.getElementById('resultado');
       resultado.innerHTML = '';
@@ -641,9 +654,18 @@ function mostrarTelefonoConPrefijo(telefono) {
           day: 'numeric'
         });
         const titulo = document.createElement('h2');
-        titulo.textContent = `Farmacias de turno para el ${fechaFormateada}`;
+        titulo.textContent = `Farmacias de turno vigentes para el ${fechaFormateada}`;
         resultado.innerHTML = '';
         resultado.appendChild(titulo);
+       
+        const avisoVigencia = document.createElement('p');
+avisoVigencia.style.background = '#e8f3ff';
+avisoVigencia.style.borderLeft = '5px solid #0056b3';
+avisoVigencia.style.padding = '10px 12px';
+avisoVigencia.style.borderRadius = '8px';
+avisoVigencia.style.color = '#333';
+avisoVigencia.innerHTML = '⏰ Este turno rige desde las 8:30 del día indicado hasta las 8:30 del día siguiente.';
+resultado.appendChild(avisoVigencia);
 
         turno.farmacias.forEach(nombre => {
           const nombreUpper = nombre.toUpperCase();
