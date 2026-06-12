@@ -744,6 +744,16 @@ function agregarBotonCompartirTurno(resultado) {
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     }
+    function configurarRangoMesActual() {
+  const fechaInput = document.getElementById('fechaTurno');
+  const hoy = new Date();
+
+  const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  const ultimoDiaMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+
+  fechaInput.min = formatDateForInput(primerDiaMes);
+  fechaInput.max = formatDateForInput(ultimoDiaMes);
+}
     function obtenerFechaTurnoVigente() {
   const ahora = new Date();
   const fechaTurno = new Date(ahora);
