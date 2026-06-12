@@ -239,15 +239,22 @@ header {
     <div class="card">
   <h2>🏥 Buscar farmacia</h2>
 
-  <select id="selectorFarmacia" style="
+<input
+  type="text"
+  id="selectorFarmacia"
+  list="listaFarmacias"
+  placeholder="Escribí o seleccioná una farmacia..."
+  style="
     width:100%;
     padding:12px;
     border-radius:8px;
     border:1px solid #ccc;
     margin-bottom:15px;
-  ">
-    <option value="">Seleccioná una farmacia</option>
-  </select>
+    box-sizing:border-box;
+  "
+>
+
+<datalist id="listaFarmacias"></datalist>
 
   <div id="resultadoFarmacia"></div>
 </div>
@@ -934,19 +941,19 @@ document.getElementById('btnMasCercana').addEventListener('click', () => {
   );
 
 });
-    const selectorFarmacia = document.getElementById('selectorFarmacia');
+  const selectorFarmacia = document.getElementById('selectorFarmacia');
+const listaFarmacias = document.getElementById('listaFarmacias');
 
 Object.keys(todasLasFarmacias).sort().forEach(nombre => {
   const opcion = document.createElement('option');
   opcion.value = nombre;
-  opcion.textContent = nombre;
-  selectorFarmacia.appendChild(opcion);
+  listaFarmacias.appendChild(opcion);
 });
-    selectorFarmacia.addEventListener('change', () => {
-  const nombre = selectorFarmacia.value;
+
+function mostrarFarmaciaBuscada(nombre) {
   const resultadoFarmacia = document.getElementById('resultadoFarmacia');
 
-  if (!nombre) {
+  if (!nombre || !todasLasFarmacias[nombre]) {
     resultadoFarmacia.innerHTML = '';
     return;
   }
@@ -955,36 +962,60 @@ Object.keys(todasLasFarmacias).sort().forEach(nombre => {
   const mapsUrl = buildMapsUrl(nombre, farmacia.direccion);
   const telefonoLimpio = prepararTelefonoParaLlamar(farmacia.telefono);
 
- const whatsappTextBuscador = encodeURIComponent(
-  `Farmacia en Olavarría:\n\n` +
-  `${nombre}\n` +
-  `Dirección: ${farmacia.direccion}\n` +
-  `Teléfono: ${mostrarTelefonoConPrefijo(farmacia.telefono)}\n` +
-  `Mapa: ${mapsUrl}`
-);
+  const whatsappTextBuscador = encodeURIComponent(
+    `Farmacia en Olavarría:\n\n` +
+    `${nombre}\n` +
+    `Dirección: ${farmacia.direccion}\n` +
+    `Teléfono: ${mostrarTelefonoConPrefijo(farmacia.telefono)}\n` +
+    `Mapa: ${mapsUrl}`
+  );
 
-resultadoFarmacia.innerHTML = `
-  <div class="pharmacy">
-    <h3>${nombre}</h3>
+  resultadoFarmacia.innerHTML = `
+    <div class="pharmacy">
+      <h3>${nombre}</h3>
 
-    <p><strong>Dirección:</strong> ${farmacia.direccion}</p>
-    <p><strong>Teléfono:</strong> ${mostrarTelefonoConPrefijo(farmacia.telefono)}</p>
+      <p><strong>Dirección:</strong> ${farmacia.direccion}</p>
+      <p><strong>Teléfono:</strong> ${mostrarTelefonoConPrefijo(farmacia.telefono)}</p>
 
-    <p>
-      <a href="tel:${telefonoLimpio}" style="display:inline-block;background:#0056b3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
-        📞 Llamar
-      </a>
+      <p>
+        <a href="tel:${telefonoLimpio}" style="display:inline-block;background:#0056b3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+          📞 Llamar
+        </a>
 
-      <a href="${mapsUrl}" target="_blank" rel="noopener" style="display:inline-block;background:#28a745;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
-        📍 Cómo llegar
-      </a>
+        <a href="${mapsUrl}" target="_blank" rel="noopener" style="display:inline-block;background:#28a745;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+          📍 Cómo llegar
+        </a>
 
-      <a href="https://wa.me/?text=${whatsappTextBuscador}" target="_blank" rel="noopener" style="display:inline-block;background:#25D366;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
-        📲 Compartir
-      </a>
-    </p>
-  </div>
-`;
+        <a href="https://wa.me/?text=${whatsappTextBuscador}" target="_blank" rel="noopener" style="display:inline-block;background:#25D366;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+          📲 Compartir
+        </a>
+      </p>
+    </div>
+  `;
+}
+
+selectorFarmacia.addEventListener('input', () => {
+  const texto = selectorFarmacia.value.trim().toUpperCase();
+
+  const farmaciaEncontrada = Object.keys(todasLasFarmacias).find(nombre => {
+    return nombre === texto;
+  });
+
+  if (farmaciaEncontrada) {
+    mostrarFarmaciaBuscada(farmaciaEncontrada);
+  }
+});
+
+selectorFarmacia.addEventListener('change', () => {
+  const texto = selectorFarmacia.value.trim().toUpperCase();
+
+  const farmaciaEncontrada = Object.keys(todasLasFarmacias).find(nombre => {
+    return nombre === texto;
+  });
+
+  if (farmaciaEncontrada) {
+    mostrarFarmaciaBuscada(farmaciaEncontrada);
+  }
 });
     // Mostrar resultados iniciales con el mes actual
     mostrarResultado(fechaInput.value);
