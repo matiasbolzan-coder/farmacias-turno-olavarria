@@ -457,12 +457,24 @@ if (telMatch) {
       return direcciones;
     }
 function prepararTelefonoParaLlamar(telefono) {
-  const numeros = telefono.replace(/\D/g, '');
+  if (!telefono) {
+    return '';
+  }
+
+  const primerNumero = telefono.split('/')[0].trim();
+  const numeros = primerNumero.replace(/\D/g, '');
 
   if (!numeros) {
     return '';
-  
+  }
+
+  if (numeros.startsWith('2284')) {
+    return numeros;
+  }
+
+  return '2284' + numeros;
 }
+
 function mostrarTelefonoConPrefijo(telefono) {
   if (!telefono) {
     return '';
@@ -479,6 +491,10 @@ function mostrarTelefonoConPrefijo(telefono) {
 
       const soloNumeros = limpio.replace(/\D/g, '');
 
+      if (!soloNumeros) {
+        return '';
+      }
+
       if (soloNumeros.startsWith('2284')) {
         return limpio;
       }
@@ -487,12 +503,6 @@ function mostrarTelefonoConPrefijo(telefono) {
     })
     .filter(numero => numero !== '')
     .join(' / ');
-}
-  if (numeros.startsWith('2284')) {
-    return numeros;
-  }
-
-  return '2284' + numeros;
 }
     function buildMapsUrl(nombre, direccion) {
       const query = [nombre, direccion, 'Olavarría', 'Buenos Aires'].filter(Boolean).join(' ');
@@ -542,7 +552,7 @@ function mostrarTelefonoConPrefijo(telefono) {
     }
 
     const mapsUrl = buildMapsUrl(nombre, farmacia.direccion);
-    const telefonoLimpio = farmacia.telefono.replace(/\D/g, '');
+    const telefonoLimpio = prepararTelefonoParaLlamar(farmacia.telefono);
 
     const whatsappText = encodeURIComponent(
       `Farmacia de turno estimada en Olavarría:\n\n` +
