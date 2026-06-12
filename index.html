@@ -782,9 +782,18 @@ async function mostrarResultado(fechaTexto) {
     return;
   }
    
-   const fecha = new Date(fechaTexto + 'T00:00:00');
-resultado.innerHTML = `<p class="no-results">🔍 Buscando farmacias de turno...</p>`;
+ const fecha = new Date(fechaTexto + 'T00:00:00');
 
+const hoy = new Date();
+const inicioMesActual = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+const finMesActual = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+
+if (fecha < inicioMesActual || fecha > finMesActual) {
+  showMessage('Solo se pueden consultar fechas del mes en curso.');
+  return;
+}
+
+resultado.innerHTML = `<p class="no-results">🔍 Buscando farmacias de turno...</p>`;
 try {
   const datosMes = await obtenerDatosDelMes(fecha);
   const direcciones = datosMes.direcciones;
@@ -873,9 +882,21 @@ item.innerHTML = `
 }
     }
 
-  const fechaInput = document.getElementById('fechaTurno');
+ const fechaInput = document.getElementById('fechaTurno');
+
+configurarRangoMesActual();
+
 const fechaTurnoVigente = obtenerFechaTurnoVigente();
-fechaInput.value = formatDateForInput(fechaTurnoVigente);
+const hoy = new Date();
+
+const inicioMesActual = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+const finMesActual = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+
+if (fechaTurnoVigente >= inicioMesActual && fechaTurnoVigente <= finMesActual) {
+  fechaInput.value = formatDateForInput(fechaTurnoVigente);
+} else {
+  fechaInput.value = formatDateForInput(hoy);
+}
 
     document.getElementById('buscarBtn').addEventListener('click', () => {
       const fechaTexto = fechaInput.value;
