@@ -617,19 +617,21 @@ function mostrarTelefonoConPrefijo(telefono) {
 
   return fechaTurno;
 }
+async function mostrarResultado(fechaTexto) {
+  const fechaInput = document.getElementById('fechaTurno');
 
-    async function mostrarResultado(fechaTexto) {
-    const fechaInput = document.getElementById('fechaTurno');
-const fechaTurnoVigente = obtenerFechaTurnoVigente();
-fechaInput.value = formatDateForInput(fechaTurnoVigente);
-      }
-      const resultado = document.getElementById('resultado');
-      resultado.innerHTML = '';
-      if (!fechaTexto) {
-        showMessage('Por favor, selecciona una fecha para ver las farmacias de turno.');
-        return;
-      }
+  if (!fechaTexto) {
+    fechaTexto = fechaInput.value || formatDateForInput(obtenerFechaTurnoVigente());
+  }
 
+  const resultado = document.getElementById('resultado');
+  resultado.innerHTML = '';
+
+  if (!fechaTexto) {
+    showMessage('Por favor, selecciona una fecha para ver las farmacias de turno.');
+    return;
+  }
+   
       const fecha = new Date(fechaTexto + 'T00:00:00');
       const url = buildSourceUrl(fecha);
       resultado.innerHTML = `<p class="no-results">🔍 Buscando farmacias de turno...</p>`;
@@ -721,9 +723,9 @@ item.innerHTML = `
 }
     }
 
-    const fechaInput = document.getElementById('fechaTurno');
-    const hoy = new Date();
-    fechaInput.value = formatDateForInput(hoy);
+  const fechaInput = document.getElementById('fechaTurno');
+const fechaTurnoVigente = obtenerFechaTurnoVigente();
+fechaInput.value = formatDateForInput(fechaTurnoVigente);
 
     document.getElementById('buscarBtn').addEventListener('click', () => {
       const fechaTexto = fechaInput.value;
