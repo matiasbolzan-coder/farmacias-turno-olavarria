@@ -456,7 +456,19 @@ if (telMatch) {
 
       return direcciones;
     }
+function prepararTelefonoParaLlamar(telefono) {
+  const numeros = telefono.replace(/\D/g, '');
 
+  if (!numeros) {
+    return '';
+  }
+
+  if (numeros.startsWith('2284')) {
+    return numeros;
+  }
+
+  return '2284' + numeros;
+}
     function buildMapsUrl(nombre, direccion) {
       const query = [nombre, direccion, 'Olavarría', 'Buenos Aires'].filter(Boolean).join(' ');
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
@@ -615,7 +627,7 @@ const whatsappText = encodeURIComponent(
   `Mapa: ${mapsUrl}`
 );
 
-const telefonoLimpioTurno = info.telefono.replace(/\D/g, '');
+const telefonoLimpioTurno = prepararTelefonoParaLlamar(info.telefono);
 
 item.innerHTML = `
   <h3>${nombre}</h3>
@@ -779,7 +791,7 @@ Object.keys(todasLasFarmacias).sort().forEach(nombre => {
 
   const farmacia = todasLasFarmacias[nombre];
   const mapsUrl = buildMapsUrl(nombre, farmacia.direccion);
-  const telefonoLimpio = farmacia.telefono.replace(/\D/g, '');
+  const telefonoLimpio = prepararTelefonoParaLlamar(farmacia.telefono);
 
  const whatsappTextBuscador = encodeURIComponent(
   `Farmacia en Olavarría:\n\n` +
