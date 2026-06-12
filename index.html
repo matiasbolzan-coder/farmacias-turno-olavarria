@@ -373,6 +373,7 @@ function obtenerFarmaciasPorPatron(fecha) {
 };
     const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
+    const cacheTurnosPorMes = {};
     function buildSourceUrl(fecha) {
       const mes = monthNames[fecha.getMonth()];
       return `https://smataolavarria.com.ar/farmacias-de-turno-${mes}/`;
@@ -397,6 +398,26 @@ function obtenerFarmaciasPorPatron(fecha) {
   }
 
   throw new Error('No se pudo cargar la fuente. Probá nuevamente en unos minutos.');
+}
+    async function obtenerDatosDelMes(fecha) {
+  const url = buildSourceUrl(fecha);
+
+  if (cacheTurnosPorMes[url]) {
+    return cacheTurnosPorMes[url];
+  }
+
+  const html = await fetchSourceHtml(url);
+  const text = cleanText(html);
+  const direcciones = parseDirecciones(text);
+  const pharmacyNames = Object.keys(direcciones);
+  const turnos = parseTurnos(text, pharmacyNames);
+
+  cacheTurnosPorMes[url] = {
+    direcciones,
+    turnos
+  };
+
+  return cacheTurnosPorMes[url];
 }
 
     function cleanText(html) {
@@ -751,18 +772,15 @@ async function mostrarResultado(fechaTexto) {
     return;
   }
    
-      const fecha = new Date(fechaTexto + 'T00:00:00');
-      const url = buildSourceUrl(fecha);
-      resultado.innerHTML = `<p class="no-results">🔍 Buscando farmacias de turno...</p>`;
+   const fecha = new Date(fechaTexto + 'T00:00:00');
+resultado.innerHTML = `<p class="no-results">🔍 Buscando farmacias de turno...</p>`;
 
-      try {
-        const html = await fetchSourceHtml(url);
-        const text = cleanText(html);
-        const direcciones = parseDirecciones(text);
-        const pharmacyNames = Object.keys(direcciones);
-        const turnos = parseTurnos(text, pharmacyNames);
-        const dia = fecha.getDate();
-        const turno = turnos[dia];
+try {
+  const datosMes = await obtenerDatosDelMes(fecha);
+  const direcciones = datosMes.direcciones;
+  const turnos = datosMes.turnos;
+  const dia = fecha.getDate();
+  const turno = turnos[dia];
 
        if (!turno || !turno.farmacias.length) {
   mostrarTurnoEstimado(fecha, resultado);
