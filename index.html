@@ -461,8 +461,33 @@ function prepararTelefonoParaLlamar(telefono) {
 
   if (!numeros) {
     return '';
+  
+}
+function mostrarTelefonoConPrefijo(telefono) {
+  if (!telefono) {
+    return '';
   }
 
+  return telefono
+    .split('/')
+    .map(numero => {
+      const limpio = numero.trim();
+
+      if (!limpio) {
+        return '';
+      }
+
+      const soloNumeros = limpio.replace(/\D/g, '');
+
+      if (soloNumeros.startsWith('2284')) {
+        return limpio;
+      }
+
+      return '2284 ' + limpio;
+    })
+    .filter(numero => numero !== '')
+    .join(' / ');
+}
   if (numeros.startsWith('2284')) {
     return numeros;
   }
@@ -535,7 +560,7 @@ function prepararTelefonoParaLlamar(telefono) {
       <h3>${nombre}</h3>
 
       <p><strong>Dirección:</strong> ${farmacia.direccion}</p>
-      <p><strong>Teléfono:</strong> ${farmacia.telefono}</p>
+      <p><strong>Teléfono:</strong> ${mostrarTelefonoConPrefijo(farmacia.telefono)}</p>
 
       <p>
         <a href="tel:${telefonoLimpio}"
@@ -623,7 +648,7 @@ const whatsappText = encodeURIComponent(
   `Farmacia de turno en Olavarría:\n\n` +
   `${nombre}\n` +
   `Dirección: ${info.direccion}\n` +
-  `Teléfono: ${info.telefono}\n` +
+  `Teléfono: ${mostrarTelefonoConPrefijo(info.telefono)}\n` +
   `Mapa: ${mapsUrl}`
 );
 
@@ -633,7 +658,7 @@ item.innerHTML = `
   <h3>${nombre}</h3>
 
   <p><strong>Dirección:</strong> ${info.direccion}</p>
-  <p><strong>Teléfono:</strong> ${info.telefono}</p>
+  <p><strong>Teléfono:</strong> ${mostrarTelefonoConPrefijo(info.telefono)}</p>
 
   <p>
     <a href="tel:${telefonoLimpioTurno}"
@@ -797,7 +822,7 @@ Object.keys(todasLasFarmacias).sort().forEach(nombre => {
   `Farmacia en Olavarría:\n\n` +
   `${nombre}\n` +
   `Dirección: ${farmacia.direccion}\n` +
-  `Teléfono: ${farmacia.telefono}\n` +
+  `Teléfono: ${mostrarTelefonoConPrefijo(farmacia.telefono)}\n` +
   `Mapa: ${mapsUrl}`
 );
 
@@ -806,7 +831,7 @@ resultadoFarmacia.innerHTML = `
     <h3>${nombre}</h3>
 
     <p><strong>Dirección:</strong> ${farmacia.direccion}</p>
-    <p><strong>Teléfono:</strong> ${farmacia.telefono}</p>
+    <p><strong>Teléfono:</strong> ${mostrarTelefonoConPrefijo(farmacia.telefono)}</p>
 
     <p>
       <a href="tel:${telefonoLimpio}" style="display:inline-block;background:#0056b3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
