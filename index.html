@@ -400,6 +400,10 @@ function buildSourceUrlAlternativa() {
   return 'https://enlineanoticias.com.ar/farmacias-de-turno/';
 }
 
+function buildSourceUrlOlavarriaNoticias() {
+  return 'https://olavarrianoticias.com.ar/farmacias-de-turno-en-olavarria/';
+}
+
 async function fetchSourceHtml(url) {
   const proxies = [
     'https://api.allorigins.win/raw?url=',
@@ -426,6 +430,7 @@ async function fetchSourceHtml(url) {
 async function obtenerDatosDelMes(fecha) {
   const urlSmata = buildSourceUrl(fecha);
   const urlAlternativa = buildSourceUrlAlternativa();
+  const urlOlavarriaNoticias = buildSourceUrlOlavarriaNoticias();
 
   const claveCache = urlSmata;
 
@@ -473,29 +478,64 @@ async function obtenerDatosDelMes(fecha) {
       return cacheTurnosPorMes[claveCache];
 
     } catch (errorAlternativa) {
-      const turnosEstimados = {};
+      try {
+        const htmlOlavarriaNoticias = await fetchSourceHtml(urlOlavarriaNoticias);
+        const textOlavarriaNoticias = cleanText(htmlOlavarriaNoticias);
+        const turnosOlavarriaNoticias = parseTurnosOlavarriaNoticias(textOlavarriaNoticias);
 
-      for (let dia = 1; dia <= 31; dia++) {
-        const fechaEstimada = new Date(fecha.getFullYear(), fecha.getMonth(), dia);
+        const turnosEstimados = {};
 
-        if (fechaEstimada.getMonth() !== fecha.getMonth()) {
-          continue;
+        for (let dia = 1; dia <= 31; dia++) {
+          const fechaEstimada = new Date(fecha.getFullYear(), fecha.getMonth(), dia);
+
+          if (fechaEstimada.getMonth() !== fecha.getMonth()) {
+            continue;
+          }
+
+          if (turnosOlavarriaNoticias[dia]) {
+            turnosEstimados[dia] = turnosOlavarriaNoticias[dia];
+          } else {
+            turnosEstimados[dia] = {
+              diaSemana: '',
+              farmacias: obtenerFarmaciasPorPatron(fechaEstimada)
+            };
+          }
         }
 
-        turnosEstimados[dia] = {
-          diaSemana: '',
-          farmacias: obtenerFarmaciasPorPatron(fechaEstimada)
+        cacheTurnosPorMes[claveCache] = {
+          fuente: 'Olavarría Noticias + patrón estimado',
+          direcciones: todasLasFarmacias,
+          turnos: turnosEstimados,
+          estimado: true
         };
+
+        return cacheTurnosPorMes[claveCache];
+
+      } catch (errorOlavarriaNoticias) {
+        const turnosEstimados = {};
+
+        for (let dia = 1; dia <= 31; dia++) {
+          const fechaEstimada = new Date(fecha.getFullYear(), fecha.getMonth(), dia);
+
+          if (fechaEstimada.getMonth() !== fecha.getMonth()) {
+            continue;
+          }
+
+          turnosEstimados[dia] = {
+            diaSemana: '',
+            farmacias: obtenerFarmaciasPorPatron(fechaEstimada)
+          };
+        }
+
+        cacheTurnosPorMes[claveCache] = {
+          fuente: 'Patrón estimado',
+          direcciones: todasLasFarmacias,
+          turnos: turnosEstimados,
+          estimado: true
+        };
+
+        return cacheTurnosPorMes[claveCache];
       }
-
-      cacheTurnosPorMes[claveCache] = {
-        fuente: 'Patrón estimado',
-        direcciones: todasLasFarmacias,
-        turnos: turnosEstimados,
-        estimado: true
-      };
-
-      return cacheTurnosPorMes[claveCache];
     }
   }
 }
@@ -503,6 +543,57 @@ async function obtenerDatosDelMes(fecha) {
       const doc = new DOMParser().parseFromString(html, 'text/html');
       return doc.body ? doc.body.textContent || '' : '';
     }
+  function normalizarNombreFarmacia(nombre) {
+  return nombre
+    .toUpperCase()
+    .replace('FARMACIA ', '')
+    .replace('FÉNIX', 'FENIX')
+    .replace('SAN JOSÉ', 'SAN JOSE')
+    .replace('MARTÍNEZ', 'MARTINEZ')
+    .replace('LAVÍN', 'LAVIN')
+    .trim();
+}
+
+function parseTurnosOlavarriaNoticias(text) {
+  const texto = text.replace(/\s+/g, ' ').trim();
+
+  const diasSemana = 'LUNES|MARTES|MIERCOLES|MIÉRCOLES|JUEVES|VIERNES|SABADO|SÁBADO|DOMINGO';
+
+  const regex = new RegExp(
+    `(${diasSemana})\\s+(\\d{1,2})\\s+DE\\s+[A-ZÁÉÍÓÚÑ]+\\s+(.*?)(?=(${diasSemana})\\s+\\d{1,2}\\s+DE\\s+[A-ZÁÉÍÓÚÑ]+|$)`,
+    'gi'
+  );
+
+  const turnos = {};
+  let match;
+
+  while ((match = regex.exec(texto)) !== null) {
+    const diaNumero = parseInt(match[2], 10);
+    const bloque = match[3].trim();
+
+    const farmacias = [];
+
+    const regexFarmacia = /FARMACIA\s+([A-ZÁÉÍÓÚÑ\s]+?):/gi;
+    let farmaciaMatch;
+
+    while ((farmaciaMatch = regexFarmacia.exec(bloque)) !== null) {
+      const nombre = normalizarNombreFarmacia(farmaciaMatch[1]);
+
+      if (todasLasFarmacias[nombre] && !farmacias.includes(nombre)) {
+        farmacias.push(nombre);
+      }
+    }
+
+    if (farmacias.length > 0) {
+      turnos[diaNumero] = {
+        diaSemana: match[1],
+        farmacias
+      };
+    }
+  }
+
+  return turnos;
+}
 function parseTurnosEnLineaNoticias(text) {
   const texto = text.replace(/\s+/g, ' ').trim();
 
@@ -944,9 +1035,9 @@ const esEstimado = datosMes.estimado;
   avisoFuentes.style.color = '#333';
   avisoFuentes.style.fontWeight = 'bold';
 
-  avisoFuentes.innerHTML = `
+avisoFuentes.innerHTML = `
     ⚠️ LAS FUENTES OFICIALES ESTÁN CAÍDAS - VUELVA A INTENTAR PRONTO<br>
-    Se muestran datos estimados por patrón de rotación de 9 días.
+    Se muestran datos de respaldo. Algunos pueden provenir de fuente alternativa parcial o del patrón estimado de 9 días.
   `;
 
   resultado.appendChild(avisoFuentes);
