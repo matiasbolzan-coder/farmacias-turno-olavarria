@@ -1172,11 +1172,11 @@ document.getElementById('btnMasCercana').addEventListener('click', () => {
       farmaciasEnPantalla.forEach((tarjeta) => {
         tarjeta.classList.remove('mas-cercana');
 
-        const nombreElemento = tarjeta.querySelector('h3');
-      const direccionElemento = Array.from(tarjeta.querySelectorAll('a'))
+     const nombreElemento = tarjeta.querySelector('h3');
+const direccionElemento = Array.from(tarjeta.querySelectorAll('a'))
   .find(enlace => enlace.textContent.includes('Cómo llegar'));
 
-        if (!nombreElemento || !direccionElemento) return;
+if (!nombreElemento || !direccionElemento) return;
 
         const nombre = nombreElemento.textContent.trim().toUpperCase();
         const datos = coordenadasFarmacias[nombre];
