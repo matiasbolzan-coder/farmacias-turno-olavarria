@@ -391,20 +391,18 @@ const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'juli
 
 const cacheTurnosPorMes = {};
 
-function buildSourceUrl(fecha) {
-  const mes = monthNames[fecha.getMonth()];
-  return `https://smataolavarria.com.ar/farmacias-de-turno-${mes}/`;
+function buildSourceUrlEnLineaNoticias() {
+  return 'https://enlineanoticias.com.ar/farmacias-de-turno/';
 }
 
-function buildSourceUrlAlternativa() {
-  return 'https://enlineanoticias.com.ar/farmacias-de-turno/';
+function buildSourceUrlSmata(fecha) {
+  const mes = monthNames[fecha.getMonth()];
+  return `https://smataolavarria.com.ar/farmacias-de-turno-${mes}/`;
 }
 
 function buildSourceUrlOlavarriaNoticias() {
   return 'https://olavarrianoticias.com.ar/farmacias-de-turno-en-olavarria/';
 }
-
-
 
 async function fetchSourceHtml(url) {
   const proxies = [
@@ -430,56 +428,60 @@ async function fetchSourceHtml(url) {
 }
 
 async function obtenerDatosDelMes(fecha) {
-  const urlSmata = buildSourceUrl(fecha);
-  const urlAlternativa = buildSourceUrlAlternativa();
+  const urlEnLineaNoticias = buildSourceUrlEnLineaNoticias();
+  const urlSmata = buildSourceUrlSmata(fecha);
   const urlOlavarriaNoticias = buildSourceUrlOlavarriaNoticias();
 
-  const claveCache = urlSmata;
+  // Clave de caché identificada por En Línea Noticias, año y mes
+  const claveCache = `ENLINEA_NOTICIAS_${fecha.getFullYear()}_${fecha.getMonth()}`;
 
   if (cacheTurnosPorMes[claveCache]) {
     return cacheTurnosPorMes[claveCache];
   }
 
+  // 1. Fuente principal: En Línea Noticias
   try {
-    const html = await fetchSourceHtml(urlSmata);
-    const text = cleanText(html);
-    const direcciones = parseDirecciones(text);
-    const pharmacyNames = Object.keys(direcciones);
-    const turnos = parseTurnos(text, pharmacyNames);
+    const htmlEnLinea = await fetchSourceHtml(urlEnLineaNoticias);
+    const textEnLinea = cleanText(htmlEnLinea);
+    const turnosEnLinea = parseTurnosEnLineaNoticias(textEnLinea);
 
-    if (!turnos || Object.keys(turnos).length === 0) {
-      throw new Error('SMATA no devolvió turnos válidos.');
+    if (!turnosEnLinea || Object.keys(turnosEnLinea).length === 0) {
+      throw new Error('En Línea Noticias no devolvió turnos válidos.');
     }
 
     cacheTurnosPorMes[claveCache] = {
-      fuente: 'SMATA',
-      direcciones,
-      turnos,
+      fuente: 'En Línea Noticias',
+      direcciones: todasLasFarmacias,
+      turnos: turnosEnLinea,
       estimado: false
     };
 
     return cacheTurnosPorMes[claveCache];
 
-  } catch (errorSmata) {
+  } catch (errorEnLinea) {
+    // 2. Primera alternativa: SMATA
     try {
-      const htmlAlternativo = await fetchSourceHtml(urlAlternativa);
-      const textAlternativo = cleanText(htmlAlternativo);
-      const turnosAlternativos = parseTurnosEnLineaNoticias(textAlternativo);
+      const htmlSmata = await fetchSourceHtml(urlSmata);
+      const textSmata = cleanText(htmlSmata);
+      const direccionesSmata = parseDirecciones(textSmata);
+      const pharmacyNames = Object.keys(direccionesSmata);
+      const turnosSmata = parseTurnos(textSmata, pharmacyNames);
 
-      if (!turnosAlternativos || Object.keys(turnosAlternativos).length === 0) {
-        throw new Error('En Línea Noticias no devolvió turnos válidos.');
+      if (!turnosSmata || Object.keys(turnosSmata).length === 0) {
+        throw new Error('SMATA no devolvió turnos válidos.');
       }
 
       cacheTurnosPorMes[claveCache] = {
-        fuente: 'En Línea Noticias',
-        direcciones: todasLasFarmacias,
-        turnos: turnosAlternativos,
+        fuente: 'SMATA',
+        direcciones: direccionesSmata,
+        turnos: turnosSmata,
         estimado: false
       };
 
       return cacheTurnosPorMes[claveCache];
 
-    } catch (errorAlternativa) {
+    } catch (errorSmata) {
+      // 3. Segunda alternativa: Olavarría Noticias
       try {
         const htmlOlavarriaNoticias = await fetchSourceHtml(urlOlavarriaNoticias);
         const textOlavarriaNoticias = cleanText(htmlOlavarriaNoticias);
@@ -514,6 +516,7 @@ async function obtenerDatosDelMes(fecha) {
         return cacheTurnosPorMes[claveCache];
 
       } catch (errorOlavarriaNoticias) {
+        // 4. Último recurso: Patrón estimado de 9 días
         const turnosEstimados = {};
 
         for (let dia = 1; dia <= 31; dia++) {
@@ -881,7 +884,7 @@ function agregarBotonCompartirTurno(resultado) {
 
   aviso.innerHTML = `
     ⚠️ <strong>Datos estimados por patrón de rotación.</strong><br>
-    No se pudo obtener la información oficial desde SMATA.
+    No se pudo obtener la información oficial desde En Línea Noticias.
     Puede haber cambios o excepciones especiales.
   `;
 
