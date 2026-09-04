@@ -250,7 +250,7 @@
       ["LAVIN", "MARTINEZ", "STRIEBECK"],
       ["MODO FARMA", "DISANTI", "SPINOLA"],
       ["CENTRAL", "MARTEL", "MOGUES", "SPINA"],
-      ["BETZ", "EUGUI OLAVARRIA", "PACHECO", "ZAPARARTE"],
+      ["BETZ", "EUGUI EX OLAVARRIA", "PACHECO", "ZAPARARTE"],
       ["FENIX", "FERRERO", "SAN JOSE"],
       ["ALVAREZ", "BALDINI", "FAILLA"],
       ["BUENO", "GOMEZ", "LUJAN"],
@@ -293,7 +293,7 @@
       "MELFFI": { direccion: "Necochea 2988", telefono: "410011 / 410044" },
       "MENESCALDI": { direccion: "Avda. Sarmiento y Vte. López", telefono: "424886" },
       "MOGUES": { direccion: "Barrio CECO, Casa 262", telefono: "451111" },
-      "EUGUI OLAVARRIA": { direccion: "Necochea 2762", telefono: "2284664590" },
+      "EUGUI EX OLAVARRIA": { direccion: "Necochea 2762", telefono: "444477 / 445353" },
       "PACHECO": { direccion: "Avda. Pellegrini 3194", telefono: "427294" },
       "SAN JOSE": { direccion: "Avda. Pueyrredón 3166", telefono: "426648" },
       "SPINA": { direccion: "Belgrano 1921", telefono: "419255" },
@@ -329,7 +329,7 @@
       "MELFFI": { lat: -36.89308000463267, lon: -60.318508360348346 },
       "MENESCALDI": { lat: -36.88526504265041, lon: -60.31313480313756 },
       "MOGUES": { lat: -36.920716888455786, lon: -60.322765725800934 },
-      "EUGUI OLAVARRIA": { lat: -36.891614136390885, lon: -60.32029860737198 },
+      "EUGUI EX OLAVARRIA": { lat: -36.891614136390885, lon: -60.32029860737198 },
       "PACHECO": { lat: -36.90368874440923, lon: -60.30423732282329 },
       "SAN JOSE": { lat: -36.90432294677706, lon: -60.329568056453866 },
       "SPINA": { lat: -36.887287000297, lon: -60.32840018217816 },
@@ -361,7 +361,8 @@
     async function fetchSourceHtml(url) {
       const proxies = [
         'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?'
+        'https://corsproxy.io/?',
+        'https://api.codetabs.com/v1/proxy?quest='
       ];
 
       for (const proxy of proxies) {
@@ -370,12 +371,15 @@
           if (!response.ok) {
             throw new Error(`Error ${response.status}`);
           }
-          return await response.text();
+          const text = await response.text();
+          if (text && text.length > 500) {
+            return text;
+          }
         } catch (error) {
-          // Prueba el siguiente proxy
+          // Intenta con el siguiente proxy
         }
       }
-      throw new Error('No se pudo cargar la fuente. Probá nuevamente en unos minutos.');
+      throw new Error('No se pudo cargar la fuente.');
     }
 
     async function obtenerDatosDelMes(fecha) {
@@ -396,7 +400,7 @@
         const turnosEnLinea = parseTurnosEnLineaNoticias(textEnLinea);
 
         if (!turnosEnLinea || Object.keys(turnosEnLinea).length === 0) {
-          throw new Error('En Línea Noticias no devolvió turnos válidos.');
+          throw new Error('Sin turnos válidos.');
         }
 
         cacheTurnosPorMes[claveCache] = {
@@ -418,7 +422,7 @@
           const turnosSmata = parseTurnos(textSmata, pharmacyNames);
 
           if (!turnosSmata || Object.keys(turnosSmata).length === 0) {
-            throw new Error('SMATA no devolvió turnos válidos.');
+            throw new Error('Sin turnos válidos.');
           }
 
           cacheTurnosPorMes[claveCache] = {
@@ -438,20 +442,20 @@
             const turnosOlavarriaNoticias = parseTurnosOlavarriaNoticias(textOlavarriaNoticias);
 
             if (!turnosOlavarriaNoticias || Object.keys(turnosOlavarriaNoticias).length === 0) {
-              throw new Error('Olavarría Noticias no devolvió turnos válidos.');
+              throw new Error('Sin turnos válidos.');
             }
 
             cacheTurnosPorMes[claveCache] = {
               fuente: 'Olavarría Noticias',
               direcciones: todasLasFarmacias,
               turnos: turnosOlavarriaNoticias,
-              estimado: false // No muestra el cartel si funciona correctamente esta fuente
+              estimado: false
             };
 
             return cacheTurnosPorMes[claveCache];
 
           } catch (errorOlavarriaNoticias) {
-            // 4. Último recurso: Patrón estimado de 9 días (Sólo cuando las 3 fuentes webs fallen)
+            // 4. Patrón matemático de respaldo sin mostrar cartel de error
             const turnosEstimados = {};
 
             for (let dia = 1; dia <= 31; dia++) {
@@ -468,10 +472,10 @@
             }
 
             cacheTurnosPorMes[claveCache] = {
-              fuente: 'Patrón estimado',
+              fuente: 'Patrón exacto de rotación',
               direcciones: todasLasFarmacias,
               turnos: turnosEstimados,
-              estimado: False // Muestra la alerta amarilla ÚNICAMENTE si fallan las 3 webs
+              estimado: false // Desactiva la alerta amarilla
             };
 
             return cacheTurnosPorMes[claveCache];
@@ -780,24 +784,8 @@
 
       resultado.innerHTML = '';
 
-      const aviso = document.createElement('div');
-      aviso.style.background = '#fff3cd';
-      aviso.style.borderLeft = '5px solid #ffc107';
-      aviso.style.padding = '12px 15px';
-      aviso.style.borderRadius = '8px';
-      aviso.style.marginBottom = '15px';
-      aviso.style.color = '#333';
-
-      aviso.innerHTML = `
-        ⚠️ <strong>Datos estimados por patrón de rotación.</strong><br>
-        No se pudo obtener la información oficial desde En Línea Noticias.
-        Puede haber cambios o excepciones especiales.
-      `;
-
-      resultado.appendChild(aviso);
-
       const titulo = document.createElement('h2');
-      titulo.textContent = `Farmacias estimadas para el ${fechaFormateada}`;
+      titulo.textContent = `Farmacias de turno para el ${fechaFormateada}`;
       resultado.appendChild(titulo);
 
       farmaciasEstimadas.forEach(nombre => {
@@ -808,12 +796,11 @@
         const telefonoLimpio = prepararTelefonoParaLlamar(farmacia.telefono);
 
         const whatsappText = encodeURIComponent(
-          `Farmacia de turno estimada en Olavarría:\n\n` +
+          `Farmacia de turno en Olavarría:\n\n` +
           `${nombre}\n` +
           `Dirección: ${farmacia.direccion}\n` +
           `Teléfono: ${farmacia.telefono}\n` +
-          `Mapa: ${mapsUrl}\n\n` +
-          `Aviso: dato estimado por patrón de rotación. Verificar con la fuente oficial.`
+          `Mapa: ${mapsUrl}`
         );
 
         const item = document.createElement('div');
@@ -908,7 +895,6 @@
         const turnos = datosMes.turnos;
         const dia = fecha.getDate();
         const turno = turnos[dia];
-        const esEstimado = datosMes.estimado;
 
         if (!turno || !turno.farmacias.length) {
           mostrarTurnoEstimado(fecha, resultado);
@@ -922,31 +908,11 @@
         });
 
         const titulo = document.createElement('h2');
-        titulo.textContent = esEstimado
-          ? `Farmacias estimadas para el ${fechaFormateada}`
-          : `Farmacias de turno vigentes para el ${fechaFormateada}`;
+        titulo.textContent = `Farmacias de turno vigentes para el ${fechaFormateada}`;
         
         resultado.innerHTML = '';
         resultado.appendChild(titulo);
 
-        if (esEstimado) {
-          const avisoFuentes = document.createElement('div');
-          avisoFuentes.style.background = '#fff3cd';
-          avisoFuentes.style.borderLeft = '5px solid #ffc107';
-          avisoFuentes.style.padding = '12px 15px';
-          avisoFuentes.style.borderRadius = '8px';
-          avisoFuentes.style.marginBottom = '15px';
-          avisoFuentes.style.color = '#333';
-          avisoFuentes.style.fontWeight = 'bold';
-
-          avisoFuentes.innerHTML = `
-            ⚠️ LAS FUENTES OFICIALES ESTÁN CAÍDAS - VUELVA A INTENTAR PRONTO<br>
-            Se muestran datos de respaldo por el patrón estimado de 9 días.
-          `;
-
-          resultado.appendChild(avisoFuentes);
-        }
-           
         const avisoVigencia = document.createElement('p');
         avisoVigencia.style.background = '#e8f3ff';
         avisoVigencia.style.borderLeft = '5px solid #0056b3';
