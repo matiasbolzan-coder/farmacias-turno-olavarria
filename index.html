@@ -7,303 +7,1393 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 700px;
-      margin: 30px auto;
-      padding: 0 15px;
-      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f9;
       color: #333;
     }
-    h1 {
-      color: #1a5276;
-      text-align: center;
-    }
+header {
+  background: #0056b3;
+  color: white;
+  padding: 10px 15px 25px;
+  text-align: center;
+}
+
+.logo-principal {
+  width: 700px;
+  max-width: 90%;
+  max-height: 220px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 5px auto;
+}
+
+.subtitulo {
+  margin-top: -10px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.aviso-turno {
+  display: block;
+  background-color: rgba(255,255,255,0.15);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: 10px;
+  max-width: 850px;
+margin-left: auto;
+margin-right: auto;
+}
+   .aviso-imprevistos {
+  display: block;
+  background-color: rgba(255, 193, 7, 0.22);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin: 8px auto 0 auto;
+  max-width: 850px;
+}
+   main {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 15px 40px;
+}
     .card {
-      background: #fff;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       margin-bottom: 20px;
     }
-    /* Estilo del aviso de alerta */
-    .alerta-amarilla {
-      background-color: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeeba;
-      padding: 12px;
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    label {
+      font-weight: bold;
+      min-width: 120px;
+    }
+    input[type="date"] {
+      border: 1px solid #ccc;
       border-radius: 6px;
-      margin-bottom: 15px;
-      display: none; /* Se oculta por defecto */
+      padding: 10px;
+      flex: 1;
+      min-width: 180px;
+      width: 100%;
+      box-sizing: border-box;
     }
-    .farmacia-item {
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .fuente-info {
-      font-size: 0.85em;
-      color: #666;
-      margin-top: 15px;
-      font-style: italic;
+    @media (max-width: 600px) {
+      .input-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      label {
+        min-width: auto;
+        width: 100%;
+      }
+      button {
+        width: 100%;
+      }
+      .card {
+        padding: 18px;
+      }
+      main {
+        margin: 15px auto;
+      }
     }
     button {
-      background-color: #27ae60;
+      background: #0056b3;
       color: white;
       border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
+      border-radius: 8px;
+      padding: 12px 18px;
       cursor: pointer;
+      font-weight: bold;
+    }
+    .watermark {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      opacity: 0.45;
+      font-size: 0.9rem;
+      color: #333;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    button:hover {
+      background: #003f80;
+    }
+    .pharmacy {
+      border-bottom: 1px solid #ddd;
+      padding: 15px 0;
+    }
+    .pharmacy.mas-cercana {
+  background: #eaffea;
+  border: 2px solid #25D366;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px 0;
+}
+
+.boton-cercana {
+  display: inline-block;
+  background: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 20px;
+}
+    .pharmacy:last-child {
+      border-bottom: none;
+    }
+    .pharmacy h3 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+    }
+    .pharmacy p {
+      margin: 4px 0;
+    }
+    .pharmacy a {
+      color: #0056b3;
+      text-decoration: none;
+    }
+    .pharmacy a:hover {
+      text-decoration: underline;
+    }
+    .no-results {
+      text-align: center;
+      color: #666;
+      margin-top: 20px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #666;
+      font-size: 0.95rem;
     }
   </style>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0056b3">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H99BX7LLM0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-H99BX7LLM0');
+</script>
+  
 </head>
 <body>
+ <header>
+  <img src="logo2.png" alt="Farmacias de Turno Olavarría" class="logo-principal">
 
-  <h1>Farmacias de Turno</h1>
+  <p class="subtitulo">
+    Olavarria Provincia de Buenos Aires, República Argentina.
+  </p>
 
-  <div class="card">
-    <label for="fechaSelect">Seleccionar Fecha: </label>
-    <input type="date" id="fechaSelect">
-    <button onclick="consultarTurnos()">Buscar Turnos</button>
-  </div>
+  <p class="aviso-turno">
+   ⏰ Los turnos de farmacia comienzan a las 8:30 horas del día indicado y finalizan a las 8:30 horas del día siguiente.
+  </p>
+   <p class="aviso-imprevistos">
+  ⚠️ Los turnos pueden estar sujetos a cambios o imprevistos de último momento. Se recomienda llamar a la farmacia antes de concurrir.
+</p>
+</header>
 
-  <!-- CARTEL DE ALERTA (Sólo visible si estimado === true) -->
-  <div id="alertaEspecial" class="alerta-amarilla">
-    ⚠️ <strong>LAS FUENTES OFICIALES ESTÁN CAÍDAS - VUELVA A INTENTAR PRONTO</strong><br>
-    Se muestran datos de respaldo. Algunos pueden provenir de fuente alternativa parcial o del patrón estimado de 9 días.
-  </div>
 
-  <!-- CONTENEDOR DE RESULTADOS -->
-  <div class="card">
-    <h2>Turnos para el <span id="fechaMostrar">-</span></h2>
-    <div id="listaFarmacias">Cargando datos...</div>
-    <div id="fuenteUsada" class="fuente-info"></div>
-  </div>
+  <div class="watermark">Creada por Matias Bolzan</div>
+  <main>
+    <div class="card">
+   <div style="
+  background:#e8f3ff;
+  border-left:5px solid #0056b3;
+  padding:12px 15px;
+  border-radius:8px;
+  margin-bottom:18px;
+  color:#333;
+">
+  📲 <strong>Instalá esta página como aplicación</strong><br>
+  En Android podés instalarla como app en tu celular.
+
+  <br><br>
+
+  <button id="btnInstalarApp" style="
+    background:#0056b3;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 14px;
+    font-weight:bold;
+    cursor:pointer;
+  ">
+    📲 Instalar app en Android
+  </button>
+     <button id="btnCompartirApp" style="
+  background:#25D366;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:10px 14px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-left:8px;
+  margin-top:8px;
+">
+  📤 Compartir app
+</button>
+
+
+</div>
+      <div class="input-group">
+        <label for="fechaTurno">Seleccionar fecha:</label>
+        <input type="date" id="fechaTurno" />
+        <button id="buscarBtn">Buscar farmacia</button>
+      </div>
+      <p style="margin:0 0 15px; color:#545454; font-size:0.95rem;">Abre esta página desde tu celular o compártela a través de un servidor local/WhatsApp para usarla en el navegador móvil.</p>
+      <div id="resultado"></div>  <div style="text-align:center; margin-top:20px;">   <button id="btnMasCercana" class="boton-cercana">     📍 Ver cuál está más cerca de mí   </button> </div>
+    </div>
+    <div class="card">
+  <h2>🏥 Buscar farmacia</h2>
+
+<input
+  type="text"
+  id="selectorFarmacia"
+  list="listaFarmacias"
+  placeholder="Escribí o seleccioná una farmacia..."
+  style="
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    margin-bottom:15px;
+    box-sizing:border-box;
+  "
+>
+
+<datalist id="listaFarmacias"></datalist>
+
+  <div id="resultadoFarmacia"></div>
+</div>
+    
+    <div class="footer">
+      <p>Haga clic en la dirección para ver la ubicación en Google Maps.</p>
+    </div>
+  </main>
+
 
   <script>
-    // -------------------------------------------------------------
-    // 1. BASE DE DATOS Y CACHÉ
-    // -------------------------------------------------------------
+    const patronGuardias9Dias = [
+  ["LAVIN", "MARTINEZ", "STRIEBECK"],
+  ["MODO FARMA", "DISANTI", "SPINOLA"],
+  ["CENTRAL", "MARTEL", "MOGUES", "SPINA"],
+  ["BETZ", "EUGUI-EX OLAVARRIA", "PACHECO", "ZAPARARTE"],
+  ["FENIX", "FERRERO", "SAN JOSE"],
+  ["ALVAREZ", "BALDINI", "FAILLA"],
+  ["BUENO", "GOMEZ", "LUJAN"],
+  ["ALEM", "LA ESENCIA", "MENESCALDI"],
+  ["CORREA", "MAGISTRAL", "MELFFI"]
+];
+
+function obtenerFarmaciasPorPatron(fecha) {
+  const fechaBase = new Date('2026-04-01T00:00:00');
+  const fechaConsulta = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+
+  const diferenciaDias = Math.round((fechaConsulta - fechaBase) / (1000 * 60 * 60 * 24));
+
+  let indice = diferenciaDias % 9;
+  if (indice < 0) {
+    indice += 9;
+  }
+
+  return patronGuardias9Dias[indice];
+}
     const todasLasFarmacias = {
-      // Reemplaza/Agrega aquí el listado con tus farmacias y direcciones reales
-      "Farmacia Pasteur": "Vicente López 2900",
-      "Farmacia Del Pueblo": "Rivadavia 2800",
-      "Farmacia Central": "San Martín 2500"
+  "ALEM": { direccion: "Rivadavia 2957", telefono: "425245" },
+  "ALVAREZ": { direccion: "Belgrano y Moreno", telefono: "420560/422488/414570" },
+  "BALDINI": { direccion: "Avda. Urquiza 3920", telefono: "428438 / 427910" },
+  "BETZ": { direccion: "Avda. Pringles 2035", telefono: "416574" },
+  "BUENO": { direccion: "Lavalle y General Paz", telefono: "414651" },
+  "CENTRAL": { direccion: "Vicente López y General Paz", telefono: "420674" },
+  "CORREA": { direccion: "Avda. Colón 2084", telefono: "412201" },
+  "MODO FARMA": { direccion: "Avda. Sarmiento 1746", telefono: "415111" },
+  "DISANTI": { direccion: "Rivadavia y Buchardo", telefono: "427868" },
+  "FAILLA": { direccion: "Avda. Del Valle y Chacabuco", telefono: "426716 / 444744" },
+  "FENIX": { direccion: "Vicente López 2257", telefono: "430013" },
+  "FERRERO": { direccion: "Avda. de los Trabajadores 3335", telefono: "425355" },
+  "GOMEZ": { direccion: "Avda. Colón 1745", telefono: "411295" },
+  "LA ESENCIA": { direccion: "Avda. Pringles y Bolívar", telefono: "418484" },
+  "LAVIN": { direccion: "Avda. Pringles 4402", telefono: "412170" },
+  "LUJAN": { direccion: "Avda. Colón y Avda. Urquiza", telefono: "424180" },
+  "MAGISTRAL": { direccion: "Avda. Sarmiento y Moreno", telefono: "431313" },
+  "MARTEL": { direccion: "España y General Paz", telefono: "423530 / 445550" },
+  "MARTINEZ": { direccion: "Avda. Colón 3172", telefono: "445641" },
+  "MELFFI": { direccion: "Necochea 2988", telefono: "410011 / 410044" },
+  "MENESCALDI": { direccion: "Avda. Sarmiento y Vte. López", telefono: "424886" },
+  "MOGUES": { direccion: "Barrio CECO, Casa 262", telefono: "451111" },
+  "EUGUI-EX OLAVARRIA": { direccion: "Necochea 2762", telefono: "444477 / 445353" },
+  "PACHECO": { direccion: "Avda. Pellegrini 3194", telefono: "427294" },
+  "SAN JOSE": { direccion: "Avda. Pueyrredón 3166", telefono: "426648" },
+  "SPINA": { direccion: "Belgrano 1921", telefono: "419255" },
+  "SPINOLA": { direccion: "Necochea 3282", telefono: "422263 / 441419" },
+  "STRIEBECK": { direccion: "Avda. Del Valle y Deán Funes", telefono: "442515" },
+  "ZAPARARTE": { direccion: "Avda. Colón 2569", telefono: "424476 / 421445 / 15-231426" },
+  "DARI": { direccion: "Smirnoff 2130, Sierras Bayas", telefono: "461109 / 490102" },
+  "PEREIRA": { direccion: "Avellaneda y Santa María, Hinojo", telefono: "491110" },
+  "QUEVEDO": { direccion: "San Martín s/n, Hinojo", telefono: "491116" },
+  "GOMEZ SIERRA CHICA": { direccion: "Avda. Centenario y B. Mitre, Sierra Chica", telefono: "423560" }
+};
+    const coordenadasFarmacias = {
+  "ALEM": { lat: -36.892710, lon: -60.321160 },
+  "ALVAREZ": { lat: -36.893658, lon: -60.320711 },
+  "BALDINI": { lat: -36.894568, lon: -60.302738 },
+  "BETZ": { lat: -36.902899, lon: -60.324015 },
+  "BUENO": { lat: -36.892271, lon: -60.325653 },
+  "CENTRAL": { lat: -36.893819, lon: -60.324135 },
+  "CORREA": { lat: -36.884874, lon: -60.323329 },
+  "MODO FARMA": { lat: -36.878802, lon: -60.321014 },
+  "DISANTI": { lat: -36.900617, lon: -60.330528 },
+  "FENIX": { lat: -36.8964937864323, lon: -60.32785440407281 },
+  "FAILLA": { lat: -36.8924125981707, lon: -60.33431932857069 },
+  "FERRERO": { lat: -36.885320492427255, lon: -60.302803987680996 },
+  "GOMEZ": { lat: -36.88255703653647, lon: -60.32586011343964 },
+  "LA ESENCIA": { lat: -36.900426968265315, lon: -60.32091345589683 },
+  "LAVIN": { lat: -36.88744149403646, lon: -60.30390526062423 },
+  "LUJAN": { lat: -36.89773338198334, lon: -60.30730801259902 },
+  "MAGISTRAL": { lat: -36.886417699768, lon: -60.3112375098981 },
+  "MARTEL": { lat: -36.89660718119119, lon: -60.320736567084545 },
+  "MARTINEZ": { lat: -36.892344255826835, lon: -60.3144816698547 },
+  "MELFFI": { lat: -36.89308000463267, lon: -60.318508360348346 },
+  "MENESCALDI": { lat: -36.88526504265041, lon: -60.31313480313756 },
+  "MOGUES": { lat: -36.920716888455786, lon: -60.322765725800934 },
+  "EUGUI-EX OLAVARRIA": { lat: -36.891614136390885, lon: -60.32029860737198 },
+  "PACHECO": { lat: -36.90368874440923, lon: -60.30423732282329 },
+  "SAN JOSE": { lat: -36.90432294677706, lon: -60.329568056453866 },
+  "SPINA": { lat: -36.887287000297, lon: -60.32840018217816 },
+  "SPINOLA": { lat: -36.89508711336123, lon: -60.31610734133674 },
+  "STRIEBECK": { lat: -36.90521450109462, lon: -60.31801548442075 },
+  "ZAPARARTE": { lat: -36.88807170116196, lon: -60.31910041717568 },
+  "DARI": { lat: -36.93316320857514, lon: -60.16231519014621 },
+  "PEREIRA": { lat: -36.877372551162644, lon: -60.17811881086478 },
+  "QUEVEDO": { lat: -36.86505207846472, lon: -60.162895063732925 },
+  "GOMEZ SIERRA CHICA": { lat: -36.84239545543758, lon: -60.22557124053602 }
+};
+const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+const cacheTurnosPorMes = {};
+
+function buildSourceUrlEnLineaNoticias() {
+  return 'https://enlineanoticias.com.ar/farmacias-de-turno/';
+}
+
+function buildSourceUrlSmata(fecha) {
+  const mes = monthNames[fecha.getMonth()];
+  return `https://smataolavarria.com.ar/farmacias-de-turno-${mes}/`;
+}
+
+function buildSourceUrlOlavarriaNoticias() {
+  return 'https://olavarrianoticias.com.ar/farmacias-de-turno-en-olavarria/';
+}
+
+async function fetchSourceHtml(url) {
+  const proxies = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?'
+  ];
+
+  for (const proxy of proxies) {
+    try {
+      const response = await fetch(proxy + encodeURIComponent(url));
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}`);
+      }
+
+      return await response.text();
+    } catch (error) {
+      // Prueba el siguiente proxy
+    }
+  }
+
+  throw new Error('No se pudo cargar la fuente. Probá nuevamente en unos minutos.');
+}
+
+async function obtenerDatosDelMes(fecha) {
+  const urlEnLineaNoticias = buildSourceUrlEnLineaNoticias();
+  const urlSmata = buildSourceUrlSmata(fecha);
+  const urlOlavarriaNoticias = buildSourceUrlOlavarriaNoticias();
+
+  // Clave de caché identificada por En Línea Noticias, año y mes
+  const claveCache = `ENLINEA_NOTICIAS_${fecha.getFullYear()}_${fecha.getMonth()}`;
+
+  if (cacheTurnosPorMes[claveCache]) {
+    return cacheTurnosPorMes[claveCache];
+  }
+
+  // 1. Fuente principal: En Línea Noticias
+  try {
+    const htmlEnLinea = await fetchSourceHtml(urlEnLineaNoticias);
+    const textEnLinea = cleanText(htmlEnLinea);
+    const turnosEnLinea = parseTurnosEnLineaNoticias(textEnLinea);
+
+    if (!turnosEnLinea || Object.keys(turnosEnLinea).length === 0) {
+      throw new Error('En Línea Noticias no devolvió turnos válidos.');
+    }
+
+    cacheTurnosPorMes[claveCache] = {
+      fuente: 'En Línea Noticias',
+      direcciones: todasLasFarmacias,
+      turnos: turnosEnLinea,
+      estimado: false
     };
 
-    const cacheTurnosPorMes = {};
+    return cacheTurnosPorMes[claveCache];
 
-    // -------------------------------------------------------------
-    // 2. CONEXIÓN A FUENTES EXT
-    // -------------------------------------------------------------
-    async function fetchSourceHtml(url) {
-      const proxies = [
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?',
-        'https://api.codetabs.com/v1/proxy?quest='
-      ];
+  } catch (errorEnLinea) {
+    // 2. Primera alternativa: SMATA
+    try {
+      const htmlSmata = await fetchSourceHtml(urlSmata);
+      const textSmata = cleanText(htmlSmata);
+      const direccionesSmata = parseDirecciones(textSmata);
+      const pharmacyNames = Object.keys(direccionesSmata);
+      const turnosSmata = parseTurnos(textSmata, pharmacyNames);
 
-      for (const proxy of proxies) {
-        try {
-          const response = await fetch(proxy + encodeURIComponent(url));
-          if (!response.ok) throw new Error(`Error ${response.status}`);
-          const html = await response.text();
-          if (html && html.length > 500) return html;
-        } catch (error) {
-          // Intenta con el siguiente proxy si el actual falla
-        }
+      if (!turnosSmata || Object.keys(turnosSmata).length === 0) {
+        throw new Error('SMATA no devolvió turnos válidos.');
       }
-      throw new Error('No se pudo cargar la fuente.');
-    }
 
-    function buildSourceUrlEnLineaNoticias() {
-      return 'https://enlineanoticias.com.ar/farmacias-de-turno-en-olavarria/';
-    }
+      cacheTurnosPorMes[claveCache] = {
+        fuente: 'SMATA',
+        direcciones: direccionesSmata,
+        turnos: turnosSmata,
+        estimado: false
+      };
 
-    function buildSourceUrlSmata(fecha) {
-      const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-      const anio = fecha.getFullYear();
-      return `https://www.smataolavarria.com.ar/farmacias.php?m=${mes}&a=${anio}`;
-    }
+      return cacheTurnosPorMes[claveCache];
 
-    function buildSourceUrlOlavarriaNoticias() {
-      return 'https://olavarrianoticias.com.ar/farmacias-de-turno-en-olavarria/';
-    }
+    } catch (errorSmata) {
+      // 3. Segunda alternativa: Olavarría Noticias
+      try {
+        const htmlOlavarriaNoticias = await fetchSourceHtml(urlOlavarriaNoticias);
+        const textOlavarriaNoticias = cleanText(htmlOlavarriaNoticias);
+        const turnosOlavarriaNoticias = parseTurnosOlavarriaNoticias(textOlavarriaNoticias);
 
-    function cleanText(text) {
-      return text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    }
+        const turnosEstimados = {};
 
-    // -------------------------------------------------------------
-    // 3. PARSERS Y PATRÓN MATEMÁTICO (Mantén tus funciones activas)
-    // -------------------------------------------------------------
-    function parseTurnosEnLineaNoticias(text) {
-      // Tu código para extraer turnos del texto de En Línea Noticias
-      return null; 
-    }
+        for (let dia = 1; dia <= 31; dia++) {
+          const fechaEstimada = new Date(fecha.getFullYear(), fecha.getMonth(), dia);
 
-    function parseDirecciones(text) {
-      return todasLasFarmacias;
-    }
+          if (fechaEstimada.getMonth() !== fecha.getMonth()) {
+            continue;
+          }
 
-    function parseTurnos(text, names) {
-      // Tu código para extraer turnos del texto de SMATA
-      return null; 
-    }
+          if (turnosOlavarriaNoticias[dia]) {
+            turnosEstimados[dia] = turnosOlavarriaNoticias[dia];
+          } else {
+            turnosEstimados[dia] = {
+              diaSemana: '',
+              farmacias: obtenerFarmaciasPorPatron(fechaEstimada)
+            };
+          }
+        }
 
-    function obtenerFarmaciasPorPatron(fecha) {
-      // Tu código matemático de la rotación de 9 días
-      return ["Farmacia Ejemplo 1", "Farmacia Ejemplo 2"];
-    }
+        cacheTurnosPorMes[claveCache] = {
+          fuente: 'Olavarría Noticias + patrón estimado',
+          direcciones: todasLasFarmacias,
+          turnos: turnosEstimados,
+          estimado: true
+        };
 
-    // -------------------------------------------------------------
-    // 4. LÓGICA PRINCIPAL (3 FUENTES + FALLBACK)
-    // -------------------------------------------------------------
-    async function obtenerDatosDelMes(fecha) {
-      const urlEnLineaNoticias = buildSourceUrlEnLineaNoticias();
-      const urlSmata = buildSourceUrlSmata(fecha);
-      const urlOlavarriaNoticias = buildSourceUrlOlavarriaNoticias();
-
-      const claveCache = `TURNOS_${fecha.getFullYear()}_${fecha.getMonth()}`;
-
-      if (cacheTurnosPorMes[claveCache]) {
         return cacheTurnosPorMes[claveCache];
-      }
 
-      // Fuente 1: En Línea Noticias
-      try {
-        const htmlEnLinea = await fetchSourceHtml(urlEnLineaNoticias);
-        const textEnLinea = cleanText(htmlEnLinea);
-        const turnosEnLinea = parseTurnosEnLineaNoticias(textEnLinea);
+      } catch (errorOlavarriaNoticias) {
+        // 4. Último recurso: Patrón estimado de 9 días
+        const turnosEstimados = {};
 
-        if (turnosEnLinea && Object.keys(turnosEnLinea).length > 0) {
-          cacheTurnosPorMes[claveCache] = {
-            fuente: 'En Línea Noticias',
-            direcciones: todasLasFarmacias,
-            turnos: turnosEnLinea,
-            estimado: false // OK -> Sin alerta
-          };
-          return cacheTurnosPorMes[claveCache];
-        }
-      } catch (e) {
-        console.warn('En Línea Noticias no disponible, probando SMATA...');
-      }
+        for (let dia = 1; dia <= 31; dia++) {
+          const fechaEstimada = new Date(fecha.getFullYear(), fecha.getMonth(), dia);
 
-      // Fuente 2: SMATA
-      try {
-        const htmlSmata = await fetchSourceHtml(urlSmata);
-        const textSmata = cleanText(htmlSmata);
-        const direccionesSmata = parseDirecciones(textSmata);
-        const pharmacyNames = Object.keys(direccionesSmata);
-        const turnosSmata = parseTurnos(textSmata, pharmacyNames);
+          if (fechaEstimada.getMonth() !== fecha.getMonth()) {
+            continue;
+          }
 
-        if (turnosSmata && Object.keys(turnosSmata).length > 0) {
-          cacheTurnosPorMes[claveCache] = {
-            fuente: 'SMATA',
-            direcciones: direccionesSmata,
-            turnos: turnosSmata,
-            estimado: false // OK -> Sin alerta
-          };
-          return cacheTurnosPorMes[claveCache];
-        }
-      } catch (e) {
-        console.warn('SMATA no disponible, probando Olavarría Noticias...');
-      }
-
-      // Fuente 3: Olavarría Noticias
-      try {
-        const htmlOlavarria = await fetchSourceHtml(urlOlavarriaNoticias);
-        const textOlavarria = cleanText(htmlOlavarria);
-        const turnosOlavarria = typeof parseTurnosOlavarriaNoticias === 'function' 
-          ? parseTurnosOlavarriaNoticias(textOlavarria) 
-          : parseTurnosEnLineaNoticias(textOlavarria);
-
-        if (turnosOlavarria && Object.keys(turnosOlavarria).length > 0) {
-          cacheTurnosPorMes[claveCache] = {
-            fuente: 'Olavarría Noticias',
-            direcciones: todasLasFarmacias,
-            turnos: turnosOlavarria,
-            estimado: false // OK -> Sin alerta
-          };
-          return cacheTurnosPorMes[claveCache];
-        }
-      } catch (e) {
-        console.warn('Olavarría Noticias no disponible...');
-      }
-
-      // Respaldo Final: Patrón de rotación de 9 días (Sólo si fallan las 3 fuentes)
-      const turnosEstimados = {};
-      for (let dia = 1; dia <= 31; dia++) {
-        const fechaEstimada = new Date(fecha.getFullYear(), fecha.getMonth(), dia);
-        if (fechaEstimada.getMonth() === fecha.getMonth()) {
           turnosEstimados[dia] = {
             diaSemana: '',
             farmacias: obtenerFarmaciasPorPatron(fechaEstimada)
           };
         }
+
+        cacheTurnosPorMes[claveCache] = {
+          fuente: 'Patrón estimado',
+          direcciones: todasLasFarmacias,
+          turnos: turnosEstimados,
+          estimado: true
+        };
+
+        return cacheTurnosPorMes[claveCache];
+      }
+    }
+  }
+}
+    function cleanText(html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return doc.body ? doc.body.textContent || '' : '';
+    }
+  function normalizarNombreFarmacia(nombre) {
+  return nombre
+    .toUpperCase()
+    .replace('FARMACIA ', '')
+    .replace('FÉNIX', 'FENIX')
+    .replace('SAN JOSÉ', 'SAN JOSE')
+    .replace('MARTÍNEZ', 'MARTINEZ')
+    .replace('LAVÍN', 'LAVIN')
+    .trim();
+}
+
+function parseTurnosOlavarriaNoticias(text) {
+  const texto = text.replace(/\s+/g, ' ').trim();
+
+  const diasSemana = 'LUNES|MARTES|MIERCOLES|MIÉRCOLES|JUEVES|VIERNES|SABADO|SÁBADO|DOMINGO';
+
+  const regex = new RegExp(
+    `(${diasSemana})\\s+(\\d{1,2})\\s+DE\\s+[A-ZÁÉÍÓÚÑ]+\\s+(.*?)(?=(${diasSemana})\\s+\\d{1,2}\\s+DE\\s+[A-ZÁÉÍÓÚÑ]+|$)`,
+    'gi'
+  );
+
+  const turnos = {};
+  let match;
+
+  while ((match = regex.exec(texto)) !== null) {
+    const diaNumero = parseInt(match[2], 10);
+    const bloque = match[3].trim();
+
+    const farmacias = [];
+
+    const regexFarmacia = /FARMACIA\s+([A-ZÁÉÍÓÚÑ\s]+?):/gi;
+    let farmaciaMatch;
+
+    while ((farmaciaMatch = regexFarmacia.exec(bloque)) !== null) {
+      const nombre = normalizarNombreFarmacia(farmaciaMatch[1]);
+
+      if (todasLasFarmacias[nombre] && !farmacias.includes(nombre)) {
+        farmacias.push(nombre);
+      }
+    }
+
+    if (farmacias.length > 0) {
+      turnos[diaNumero] = {
+        diaSemana: match[1],
+        farmacias
+      };
+    }
+  }
+
+  return turnos;
+}
+function parseTurnosEnLineaNoticias(text) {
+  const texto = text.replace(/\s+/g, ' ').trim();
+
+  const nombresFarmacias = Object.keys(todasLasFarmacias)
+    .map(nombre => nombre.toUpperCase())
+    .sort((a, b) => b.length - a.length);
+
+  const diasSemana = 'LUNES|MARTES|MIERCOLES|MIÉRCOLES|JUEVES|VIERNES|SABADO|SÁBADO|DOMINGO';
+
+  const regex = new RegExp(
+    `(${diasSemana})\\s+(\\d{1,2})\\s+(.*?)(?=(${diasSemana})\\s+\\d{1,2}|$)`,
+    'gi'
+  );
+
+  const turnos = {};
+  let match;
+
+  while ((match = regex.exec(texto)) !== null) {
+    const diaNumero = parseInt(match[2], 10);
+    const bloque = match[3].trim().toUpperCase();
+
+    const farmacias = [];
+
+    nombresFarmacias.forEach(nombre => {
+      if (bloque.includes(nombre)) {
+        farmacias.push(nombre);
+      }
+    });
+
+    if (farmacias.length > 0) {
+      turnos[diaNumero] = {
+        diaSemana: match[1],
+        farmacias
+      };
+    }
+  }
+
+  return turnos;
+}
+    function parseTurnos(text, pharmacyNames) {
+      const [turnosText] = text.split(/DIRECCIONES Y TEL[EÉ]FONOS|DIRECCIONES Y TELEFONOS/i);
+      if (!turnosText) return {};
+      const headerMatch = turnosText.match(/TURNOS\s+[A-ZÁÉÍÓÚÑ0-9\s]+/i);
+      let content = headerMatch ? turnosText.slice(headerMatch.index + headerMatch[0].length) : turnosText;
+      content = content.replace(/\s+/g, ' ').trim();
+
+      const dayRegex = /(LUNES|MARTES|MIERCOLES|MIÉRCOLES|JUEVES|VIERNES|SABADO|SÁBADO|DOMINGO)(\d+)(.*?)(?=(?:LUNES|MARTES|MIERCOLES|MIÉRCOLES|JUEVES|VIERNES|SABADO|SÁBADO|DOMINGO)\d+|$)/gis;
+      const knownNames = (pharmacyNames || []).map(name => name.toUpperCase()).sort((a, b) => b.length - a.length);
+      const turnos = {};
+      let match;
+
+      while ((match = dayRegex.exec(content)) !== null) {
+        const diaNumero = parseInt(match[2], 10);
+        if (Number.isNaN(diaNumero)) continue;
+        let remaining = match[3].trim();
+        const farmacias = [];
+
+        while (remaining.length > 0) {
+          let found = null;
+          for (const name of knownNames) {
+            if (remaining.startsWith(name)) {
+              found = name;
+              break;
+            }
+          }
+          if (!found) break;
+          farmacias.push(found);
+          remaining = remaining.slice(found.length).trim();
+        }
+
+        turnos[diaNumero] = {
+          diaSemana: match[1],
+          farmacias
+        };
       }
 
-      cacheTurnosPorMes[claveCache] = {
-        fuente: 'Patrón de rotación de 9 días',
-        direcciones: todasLasFarmacias,
-        turnos: turnosEstimados,
-        estimado: true // LAS 3 FUENTES FALLARON -> Muestra la alerta
+      return turnos;
+    }
+
+    function parseDirecciones(text) {
+      const parts = text.split(/DIRECCIONES Y TEL[EÉ]FONOS|DIRECCIONES Y TELEFONOS/i);
+      const direccionText = parts[1] || '';
+      const lines = direccionText.split('\n').map(line => line.trim()).filter(Boolean);
+      const direcciones = {};
+
+      lines.forEach(line => {
+        const match = line.match(/^([A-ZÁÉÍÓÚÑ0-9\s]+):\s*(.+)$/i);
+        if (!match) return;
+        const nombre = match[1].trim().toUpperCase();
+        const rest = match[2].trim();
+        const telMatch = rest.match(/^(.*?)\.\s*Tel\.?\s*(.*)$/i);
+
+let direccion = rest;
+let telefono = '';
+
+if (telMatch) {
+  direccion = telMatch[1].trim();
+  telefono = telMatch[2].trim();
+}
+        if (nombre) {
+          direcciones[nombre] = { direccion, telefono };
+        }
+      });
+
+      return direcciones;
+    }
+function prepararTelefonoParaLlamar(telefono) {
+  if (!telefono) {
+    return '';
+  }
+
+  const primerNumero = telefono.split('/')[0].trim();
+  const numeros = primerNumero.replace(/\D/g, '');
+
+  if (!numeros) {
+    return '';
+  }
+
+  if (numeros.startsWith('2284')) {
+    return numeros;
+  }
+
+  return '2284' + numeros;
+}
+
+function mostrarTelefonoConPrefijo(telefono) {
+  if (!telefono) {
+    return '';
+  }
+
+  return telefono
+    .split('/')
+    .map(numero => {
+      const limpio = numero.trim();
+
+      if (!limpio) {
+        return '';
+      }
+
+      const soloNumeros = limpio.replace(/\D/g, '');
+
+      if (!soloNumeros) {
+        return '';
+      }
+
+      if (soloNumeros.startsWith('2284')) {
+        return limpio;
+      }
+
+      return '2284 ' + limpio;
+    })
+    .filter(numero => numero !== '')
+    .join(' / ');
+}
+    function buildMapsUrl(nombre, direccion) {
+      const query = [nombre, direccion, 'Olavarría', 'Buenos Aires'].filter(Boolean).join(' ');
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+async function compartirTurnoDesdePantalla() {
+  const resultado = document.getElementById('resultado');
+  const farmacias = resultado.querySelectorAll('.pharmacy');
+
+  if (farmacias.length === 0) {
+    alert('Primero buscá una fecha para ver las farmacias de turno.');
+    return;
+  }
+
+  const titulo = resultado.querySelector('h2');
+  let mensaje = 'Farmacias de turno en Olavarría\n';
+
+  if (titulo) {
+    mensaje += titulo.textContent + '\n\n';
+  } else {
+    mensaje += '\n';
+  }
+
+  farmacias.forEach(tarjeta => {
+    const nombre = tarjeta.querySelector('h3')?.textContent || '';
+    const textos = tarjeta.querySelectorAll('p');
+
+    let direccion = '';
+    let telefono = '';
+
+    textos.forEach(p => {
+      const texto = p.textContent.trim();
+
+      if (texto.startsWith('Dirección:')) {
+        direccion = texto.replace('Dirección:', '').trim();
+      }
+
+      if (texto.startsWith('Teléfono:')) {
+        telefono = texto.replace('Teléfono:', '').trim();
+      }
+    });
+
+    const linkMaps = Array.from(tarjeta.querySelectorAll('a'))
+      .find(a => a.textContent.includes('Cómo llegar'));
+
+    const mapsUrl = linkMaps ? linkMaps.href : '';
+
+    mensaje +=
+      nombre + '\n' +
+      'Dirección: ' + direccion + '\n' +
+      'Teléfono: ' + telefono + '\n';
+
+    if (mapsUrl) {
+      mensaje += 'Mapa: ' + mapsUrl + '\n';
+    }
+
+    mensaje += '\n';
+  });
+
+  mensaje +=
+    'App Farmacias de Turno Olavarría:\n' +
+    'https://matiasbolzan-coder.github.io/farmacias-turno-olavarria/';
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Farmacias de Turno Olavarría',
+        text: mensaje
+      });
+    } catch (error) {
+      // El usuario canceló el compartir
+    }
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent(mensaje), '_blank');
+  }
+}
+
+function agregarBotonCompartirTurno(resultado) {
+  const botonAnterior = document.getElementById('btnCompartirTurnoCompleto');
+
+  if (botonAnterior) {
+    botonAnterior.remove();
+  }
+
+  const contenedor = document.createElement('div');
+  contenedor.id = 'btnCompartirTurnoCompleto';
+  contenedor.style.textAlign = 'center';
+  contenedor.style.marginTop = '20px';
+
+  contenedor.innerHTML = `
+    <button style="
+      background:#25D366;
+      color:white;
+      border:none;
+      border-radius:8px;
+      padding:12px 16px;
+      cursor:pointer;
+      font-weight:bold;
+    ">
+      📲 Compartir turno completo
+    </button>
+  `;
+
+  contenedor.querySelector('button').addEventListener('click', compartirTurnoDesdePantalla);
+
+  resultado.appendChild(contenedor);
+}
+    function showMessage(text) {
+      const resultado = document.getElementById('resultado');
+      resultado.innerHTML = `<p class="no-results">${text}</p>`;
+    }
+    function mostrarTurnoEstimado(fecha, resultado) {
+  const farmaciasEstimadas = obtenerFarmaciasPorPatron(fecha);
+
+  const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  resultado.innerHTML = '';
+
+  const aviso = document.createElement('div');
+  aviso.style.background = '#fff3cd';
+  aviso.style.borderLeft = '5px solid #ffc107';
+  aviso.style.padding = '12px 15px';
+  aviso.style.borderRadius = '8px';
+  aviso.style.marginBottom = '15px';
+  aviso.style.color = '#333';
+
+  aviso.innerHTML = `
+    ⚠️ <strong>Datos estimados por patrón de rotación.</strong><br>
+    No se pudo obtener la información oficial desde En Línea Noticias.
+    Puede haber cambios o excepciones especiales.
+  `;
+
+  resultado.appendChild(aviso);
+
+  const titulo = document.createElement('h2');
+  titulo.textContent = `Farmacias estimadas para el ${fechaFormateada}`;
+  resultado.appendChild(titulo);
+
+  farmaciasEstimadas.forEach(nombre => {
+    const farmacia = todasLasFarmacias[nombre];
+
+    if (!farmacia) {
+      return;
+    }
+
+    const mapsUrl = buildMapsUrl(nombre, farmacia.direccion);
+    const telefonoLimpio = prepararTelefonoParaLlamar(farmacia.telefono);
+
+    const whatsappText = encodeURIComponent(
+      `Farmacia de turno estimada en Olavarría:\n\n` +
+      `${nombre}\n` +
+      `Dirección: ${farmacia.direccion}\n` +
+      `Teléfono: ${farmacia.telefono}\n` +
+      `Mapa: ${mapsUrl}\n\n` +
+      `Aviso: dato estimado por patrón de rotación. Verificar con la fuente oficial.`
+    );
+
+    const item = document.createElement('div');
+    item.className = 'pharmacy';
+
+    item.innerHTML = `
+      <h3>${nombre}</h3>
+
+      <p><strong>Dirección:</strong> ${farmacia.direccion}</p>
+      <p><strong>Teléfono:</strong> ${mostrarTelefonoConPrefijo(farmacia.telefono)}</p>
+
+      <p>
+        <a href="tel:${telefonoLimpio}"
+           style="display:inline-block;background:#0056b3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+           📞 Llamar
+        </a>
+
+        <a href="${mapsUrl}"
+           target="_blank"
+           rel="noopener"
+           style="display:inline-block;background:#28a745;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+           📍 Cómo llegar
+        </a>
+      </p>
+
+      <p>
+        <a href="https://wa.me/?text=${whatsappText}"
+           target="_blank"
+           rel="noopener"
+           style="display:inline-block;background:#25D366;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+           📲 Compartir por WhatsApp
+        </a>
+      </p>
+    `;
+
+    resultado.appendChild(item);
+  });
+              agregarBotonCompartirTurno(resultado);
+}
+
+    function formatDateForInput(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    function configurarRangoMesActual() {
+  const fechaInput = document.getElementById('fechaTurno');
+  const hoy = new Date();
+
+  const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+  const ultimoDiaMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+
+  fechaInput.min = formatDateForInput(primerDiaMes);
+  fechaInput.max = formatDateForInput(ultimoDiaMes);
+}
+    function obtenerFechaTurnoVigente() {
+  const ahora = new Date();
+  const fechaTurno = new Date(ahora);
+
+  const hora = ahora.getHours();
+  const minutos = ahora.getMinutes();
+
+  if (hora < 8 || (hora === 8 && minutos < 30)) {
+    fechaTurno.setDate(fechaTurno.getDate() - 1);
+  }
+
+  return fechaTurno;
+}
+async function mostrarResultado(fechaTexto) {
+  const fechaInput = document.getElementById('fechaTurno');
+
+  if (!fechaTexto) {
+    fechaTexto = fechaInput.value || formatDateForInput(obtenerFechaTurnoVigente());
+  }
+
+  const resultado = document.getElementById('resultado');
+  resultado.innerHTML = '';
+
+  if (!fechaTexto) {
+    showMessage('Por favor, selecciona una fecha para ver las farmacias de turno.');
+    return;
+  }
+   
+ const fecha = new Date(fechaTexto + 'T00:00:00');
+
+const hoy = new Date();
+const inicioMesActual = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+const finMesActual = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+
+if (fecha < inicioMesActual || fecha > finMesActual) {
+  showMessage('Solo se pueden consultar fechas del mes en curso.');
+  return;
+}
+
+resultado.innerHTML = `<p class="no-results">🔍 Buscando farmacias de turno...</p>`;
+try {
+  const datosMes = await obtenerDatosDelMes(fecha);
+  const direcciones = datosMes.direcciones;
+  const turnos = datosMes.turnos;
+  const dia = fecha.getDate();
+  const turno = turnos[dia];
+const esEstimado = datosMes.estimado;
+       if (!turno || !turno.farmacias.length) {
+  mostrarTurnoEstimado(fecha, resultado);
+  return;
+}
+
+        const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        const titulo = document.createElement('h2');
+      titulo.textContent = esEstimado
+  ? `Farmacias estimadas para el ${fechaFormateada}`
+  : `Farmacias de turno vigentes para el ${fechaFormateada}`;
+        resultado.innerHTML = '';
+        resultado.appendChild(titulo);
+  if (esEstimado) {
+  const avisoFuentes = document.createElement('div');
+  avisoFuentes.style.background = '#fff3cd';
+  avisoFuentes.style.borderLeft = '5px solid #ffc107';
+  avisoFuentes.style.padding = '12px 15px';
+  avisoFuentes.style.borderRadius = '8px';
+  avisoFuentes.style.marginBottom = '15px';
+  avisoFuentes.style.color = '#333';
+  avisoFuentes.style.fontWeight = 'bold';
+
+avisoFuentes.innerHTML = `
+    ⚠️ LAS FUENTES OFICIALES ESTÁN CAÍDAS - VUELVA A INTENTAR PRONTO<br>
+    Se muestran datos de respaldo. Algunos pueden provenir de fuente alternativa parcial o del patrón estimado de 9 días.
+  `;
+
+  resultado.appendChild(avisoFuentes);
+}
+       
+        const avisoVigencia = document.createElement('p');
+avisoVigencia.style.background = '#e8f3ff';
+avisoVigencia.style.borderLeft = '5px solid #0056b3';
+avisoVigencia.style.padding = '10px 12px';
+avisoVigencia.style.borderRadius = '8px';
+avisoVigencia.style.color = '#333';
+avisoVigencia.innerHTML = '⏰ Este turno rige desde las 8:30 del día indicado hasta las 8:30 del día siguiente.';
+resultado.appendChild(avisoVigencia);
+
+        turno.farmacias.forEach(nombre => {
+          const nombreUpper = nombre.toUpperCase();
+          const info = direcciones[nombreUpper] || { direccion: 'No disponible', telefono: 'No disponible' };
+          const item = document.createElement('div');
+          item.className = 'pharmacy';
+         const mapsUrl = buildMapsUrl(nombre, info.direccion);
+
+const whatsappText = encodeURIComponent(
+  `Farmacia de turno en Olavarría:\n\n` +
+  `${nombre}\n` +
+  `Dirección: ${info.direccion}\n` +
+  `Teléfono: ${mostrarTelefonoConPrefijo(info.telefono)}\n` +
+  `Mapa: ${mapsUrl}`
+);
+
+const telefonoLimpioTurno = prepararTelefonoParaLlamar(info.telefono);
+
+item.innerHTML = `
+  <h3>${nombre}</h3>
+
+  <p><strong>Dirección:</strong> ${info.direccion}</p>
+  <p><strong>Teléfono:</strong> ${mostrarTelefonoConPrefijo(info.telefono)}</p>
+
+  <p>
+    <a href="tel:${telefonoLimpioTurno}"
+       style="display:inline-block;background:#0056b3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+       📞 Llamar
+    </a>
+
+    <a href="${mapsUrl}"
+       target="_blank"
+       rel="noopener"
+       style="display:inline-block;background:#28a745;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+       📍 Cómo llegar
+    </a>
+  </p>
+
+  <p>
+    <a href="https://wa.me/?text=${whatsappText}"
+       target="_blank"
+       rel="noopener"
+       style="display:inline-block;background:#25D366;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+       📲 Compartir por WhatsApp
+    </a>
+  </p>
+`;
+          
+        resultado.appendChild(item);
+  });
+
+  agregarBotonCompartirTurno(resultado);
+
+    } catch (error) {
+  mostrarTurnoEstimado(fecha, resultado);
+}
+    }
+
+ const fechaInput = document.getElementById('fechaTurno');
+
+configurarRangoMesActual();
+
+const fechaTurnoVigente = obtenerFechaTurnoVigente();
+const hoy = new Date();
+
+const inicioMesActual = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+const finMesActual = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+
+if (fechaTurnoVigente >= inicioMesActual && fechaTurnoVigente <= finMesActual) {
+  fechaInput.value = formatDateForInput(fechaTurnoVigente);
+} else {
+  fechaInput.value = formatDateForInput(hoy);
+}
+
+    document.getElementById('buscarBtn').addEventListener('click', () => {
+      const fechaTexto = fechaInput.value;
+      mostrarResultado(fechaTexto);
+    });
+function calcularDistanciaKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+document.getElementById('btnMasCercana').addEventListener('click', () => {
+
+  if (!navigator.geolocation) {
+    alert('Tu navegador no permite obtener la ubicación.');
+    return;
+  }
+
+  const farmaciasEnPantalla = document.querySelectorAll('.pharmacy');
+
+  if (farmaciasEnPantalla.length === 0) {
+    alert('Primero buscá una fecha para ver las farmacias de turno.');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (posicion) => {
+      const latUsuario = posicion.coords.latitude;
+      const lonUsuario = posicion.coords.longitude;
+
+      let farmaciaMasCercana = null;
+      let distanciaMenor = Infinity;
+      let tarjetaMasCercana = null;
+      let mapsUrlMasCercana = '';
+
+      farmaciasEnPantalla.forEach((tarjeta) => {
+        tarjeta.classList.remove('mas-cercana');
+
+     const nombreElemento = tarjeta.querySelector('h3');
+const direccionElemento = Array.from(tarjeta.querySelectorAll('a'))
+  .find(enlace => enlace.textContent.includes('Cómo llegar'));
+
+if (!nombreElemento || !direccionElemento) return;
+
+        const nombre = nombreElemento.textContent.trim().toUpperCase();
+        const datos = coordenadasFarmacias[nombre];
+
+        if (!datos) return;
+
+        const distancia = calcularDistanciaKm(
+          latUsuario,
+          lonUsuario,
+          datos.lat,
+          datos.lon
+        );
+
+        if (distancia < distanciaMenor) {
+          distanciaMenor = distancia;
+          farmaciaMasCercana = nombreElemento.textContent.trim();
+          tarjetaMasCercana = tarjeta;
+          mapsUrlMasCercana = direccionElemento.href;
+        }
+      });
+
+      if (!farmaciaMasCercana) {
+        alert('No se pudo calcular la farmacia más cercana porque faltan coordenadas.');
+        return;
+      }
+
+      tarjetaMasCercana.classList.add('mas-cercana');
+
+      const distanciaTexto =
+        distanciaMenor < 1
+          ? Math.round(distanciaMenor * 1000) + ' metros'
+          : distanciaMenor.toFixed(1) + ' km';
+
+      const abrirMaps = confirm(
+        'La farmacia más cercana es:\n\n' +
+        farmaciaMasCercana +
+        '\n\nDistancia aproximada: ' +
+        distanciaTexto +
+        '\n\n¿Desea abrir Google Maps para ir?'
+      );
+
+      if (abrirMaps) {
+        window.open(mapsUrlMasCercana, '_blank');
+      }
+    },
+    () => {
+      alert('No fue posible obtener tu ubicación. Revisá los permisos del navegador.');
+    }
+  );
+
+});
+  const selectorFarmacia = document.getElementById('selectorFarmacia');
+const listaFarmacias = document.getElementById('listaFarmacias');
+
+Object.keys(todasLasFarmacias).sort().forEach(nombre => {
+  const opcion = document.createElement('option');
+  opcion.value = nombre;
+  listaFarmacias.appendChild(opcion);
+});
+
+function mostrarFarmaciaBuscada(nombre) {
+  const resultadoFarmacia = document.getElementById('resultadoFarmacia');
+
+  if (!nombre || !todasLasFarmacias[nombre]) {
+    resultadoFarmacia.innerHTML = '';
+    return;
+  }
+
+  const farmacia = todasLasFarmacias[nombre];
+  const mapsUrl = buildMapsUrl(nombre, farmacia.direccion);
+  const telefonoLimpio = prepararTelefonoParaLlamar(farmacia.telefono);
+
+  const whatsappTextBuscador = encodeURIComponent(
+    `Farmacia en Olavarría:\n\n` +
+    `${nombre}\n` +
+    `Dirección: ${farmacia.direccion}\n` +
+    `Teléfono: ${mostrarTelefonoConPrefijo(farmacia.telefono)}\n` +
+    `Mapa: ${mapsUrl}`
+  );
+
+  resultadoFarmacia.innerHTML = `
+    <div class="pharmacy">
+      <h3>${nombre}</h3>
+
+      <p><strong>Dirección:</strong> ${farmacia.direccion}</p>
+      <p><strong>Teléfono:</strong> ${mostrarTelefonoConPrefijo(farmacia.telefono)}</p>
+
+      <p>
+        <a href="tel:${telefonoLimpio}" style="display:inline-block;background:#0056b3;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+          📞 Llamar
+        </a>
+
+        <a href="${mapsUrl}" target="_blank" rel="noopener" style="display:inline-block;background:#28a745;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+          📍 Cómo llegar
+        </a>
+
+        <a href="https://wa.me/?text=${whatsappTextBuscador}" target="_blank" rel="noopener" style="display:inline-block;background:#25D366;color:white;padding:8px 12px;border-radius:6px;text-decoration:none;font-weight:bold;margin:4px;">
+          📲 Compartir
+        </a>
+      </p>
+    </div>
+  `;
+}
+
+selectorFarmacia.addEventListener('input', () => {
+  const texto = selectorFarmacia.value.trim().toUpperCase();
+
+  const farmaciaEncontrada = Object.keys(todasLasFarmacias).find(nombre => {
+    return nombre === texto;
+  });
+
+  if (farmaciaEncontrada) {
+    mostrarFarmaciaBuscada(farmaciaEncontrada);
+  }
+});
+
+selectorFarmacia.addEventListener('change', () => {
+  const texto = selectorFarmacia.value.trim().toUpperCase();
+
+  const farmaciaEncontrada = Object.keys(todasLasFarmacias).find(nombre => {
+    return nombre === texto;
+  });
+
+  if (farmaciaEncontrada) {
+    mostrarFarmaciaBuscada(farmaciaEncontrada);
+  }
+});
+    // Mostrar resultados iniciales con el mes actual
+    mostrarResultado(fechaInput.value);
+  </script>
+ <script>
+  let eventoInstalacion = null;
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    eventoInstalacion = event;
+
+    const botonInstalar = document.getElementById('btnInstalarApp');
+    const mensajeInstalacion = document.getElementById('mensajeInstalacion');
+
+    if (botonInstalar) {
+      botonInstalar.style.display = 'inline-block';
+    }
+
+    if (mensajeInstalacion) {
+      mensajeInstalacion.textContent = 'Tocá el botón para instalar la app en tu celular.';
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const botonInstalar = document.getElementById('btnInstalarApp');
+    const mensajeInstalacion = document.getElementById('mensajeInstalacion');
+
+    if (!botonInstalar) return;
+
+    botonInstalar.addEventListener('click', async () => {
+      if (!eventoInstalacion) {
+        alert('Si no aparece la instalación automática, tocá los 3 puntos de Chrome ⋮ y elegí “Instalar aplicación” o “Agregar a pantalla principal”.');
+        return;
+      }
+
+      eventoInstalacion.prompt();
+
+      const resultado = await eventoInstalacion.userChoice;
+
+      if (resultado.outcome === 'accepted') {
+        if (mensajeInstalacion) {
+          mensajeInstalacion.textContent = 'La app fue instalada correctamente.';
+        }
+      } else {
+        if (mensajeInstalacion) {
+          mensajeInstalacion.textContent = 'La instalación fue cancelada.';
+        }
+      }
+
+      eventoInstalacion = null;
+    });
+  });
+</script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btnCompartirApp = document.getElementById('btnCompartirApp');
+
+    if (!btnCompartirApp) return;
+
+    btnCompartirApp.addEventListener('click', async () => {
+      const datosCompartir = {
+        title: 'Farmacias de Turno Olavarría',
+        text: 'Consultá farmacias de turno, teléfonos, direcciones y cómo llegar en Olavarría.',
+        url: 'https://matiasbolzan-coder.github.io/farmacias-turno-olavarria/'
       };
 
-      return cacheTurnosPorMes[claveCache];
-    }
-
-    // -------------------------------------------------------------
-    // 5. INTERFAZ DE USUARIO
-    // -------------------------------------------------------------
-    async function consultarTurnos() {
-      const inputFecha = document.getElementById('fechaSelect').value;
-      if (!inputFecha) return;
-
-      const [anio, mes, dia] = inputFecha.split('-').map(Number);
-      const fechaSeleccionada = new Date(anio, mes - 1, dia);
-
-      document.getElementById('fechaMostrar').innerText = `${dia}/${mes}/${anio}`;
-      document.getElementById('listaFarmacias').innerHTML = 'Cargando...';
-
-      try {
-        const datosMes = await obtenerDatosDelMes(fechaSeleccionada);
-        
-        // Controla la visibilidad de la alerta
-        const alertaDiv = document.getElementById('alertaEspecial');
-        if (datosMes.estimado === true) {
-          alertaDiv.style.display = 'block';
-        } else {
-          alertaDiv.style.display = 'none';
+      if (navigator.share) {
+        try {
+          await navigator.share(datosCompartir);
+        } catch (error) {
+          // El usuario canceló o no pudo compartir
         }
+      } else {
+        const mensaje = encodeURIComponent(
+          datosCompartir.text + '\n\n' + datosCompartir.url
+        );
 
-        document.getElementById('fuenteUsada').innerText = `Fuente consultada: ${datosMes.fuente}`;
-
-        const infoDia = datosMes.turnos[dia];
-        if (infoDia && infoDia.farmacias && infoDia.farmacias.length > 0) {
-          let html = '<div>';
-          infoDia.farmacias.forEach(farmacia => {
-            const direccion = datosMes.direcciones[farmacia] || 'Dirección no especificada';
-            html += `<div class="farmacia-item"><strong>${farmacia}</strong> - ${direccion}</div>`;
-          });
-          html += '</div>';
-          document.getElementById('listaFarmacias').innerHTML = html;
-        } else {
-          document.getElementById('listaFarmacias').innerHTML = 'No hay datos disponibles para la fecha seleccionada.';
-        }
-
-      } catch (error) {
-        console.error(error);
-        document.getElementById('listaFarmacias').innerHTML = 'Error de conexión al cargar la información.';
+        window.open('https://wa.me/?text=' + mensaje, '_blank');
       }
-    }
-
-    // Cargar la fecha actual al iniciar
-    window.onload = function() {
-      const hoy = new Date();
-      const yyyy = hoy.getFullYear();
-      const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-      const dd = String(hoy.getDate()).padStart(2, '0');
-      document.getElementById('fechaSelect').value = `${yyyy}-${mm}-${dd}`;
-      consultarTurnos();
-    };
-  </script>
+    });
+  });
+</script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js');
+  }
+</script>
 </body>
 </html>
