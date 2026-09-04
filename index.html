@@ -387,17 +387,22 @@ function obtenerFarmaciasPorPatron(fecha) {
   "QUEVEDO": { lat: -36.86505207846472, lon: -60.162895063732925 },
   "GOMEZ SIERRA CHICA": { lat: -36.84239545543758, lon: -60.22557124053602 }
 };
-
+const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 const cacheTurnosPorMes = {};
 
-function buildSourceUrl() {
+function buildSourceUrl(fecha) {
   return 'https://enlineanoticias.com.ar/farmacias-de-turno/';
 }
 
 function buildSourceUrlAlternativa() {
+  return 'https://enlineanoticias.com.ar/farmacias-de-turno/';
+}
+
+function buildSourceUrlOlavarriaNoticias() {
   return 'https://olavarrianoticias.com.ar/farmacias-de-turno-en-olavarria/';
 }
+
 
 async function fetchSourceHtml(url) {
   const proxies = [
