@@ -392,7 +392,8 @@ const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'juli
 const cacheTurnosPorMes = {};
 
 function buildSourceUrl(fecha) {
-  return 'https://enlineanoticias.com.ar/farmacias-de-turno/';
+  const mes = monthNames[fecha.getMonth()];
+  return `https://smataolavarria.com.ar/farmacias-de-turno-${mes}/`;
 }
 
 function buildSourceUrlAlternativa() {
@@ -402,6 +403,7 @@ function buildSourceUrlAlternativa() {
 function buildSourceUrlOlavarriaNoticias() {
   return 'https://olavarrianoticias.com.ar/farmacias-de-turno-en-olavarria/';
 }
+
 
 
 async function fetchSourceHtml(url) {
